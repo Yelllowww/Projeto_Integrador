@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de YouTube com IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        #loading {
+            color: #888;
+            font-style: italic;
+            margin-top: 15px;
+            display: none;
+        }
+        .response-box {
+            background-color: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-left: 5px solid #4f46e5;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 8px;
+            text-align: left;
+            white-space: pre-wrap; /* Mantém a formatação da resposta da IA */
+        }
+        .response-box h3 {
+            margin-top: 0;
+            color: #4338ca;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consultar IA do YouTube</h1>
+        <p>Faça uma pergunta sobre temas de vídeos, scripts ou análises de canal.</p>
+        <div class="input-group">
+            <textarea id="pergunta" placeholder="Ex: 'Sugira 5 temas de vídeos para um canal de tecnologia com foco em reviews de smartphones.'" required></textarea>
+            <button onclick="enviarPergunta()">Enviar</button>
+        </div>
+        <p id="loading">Aguarde, a IA está pensando...</p>
+        <div id="resposta-container" class="response-box" style="display: none;">
+            <h3>Resposta da IA:</h3>
+            <p id="resposta-texto"></p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3001/pergunta"; // Mude para a URL do seu backend se for diferente
+
+        async function enviarPergunta() {
+            const pergunta = document.getElementById('pergunta').value;
+            const loading = document.getElementById('loading');
+            const respostaContainer = document.getElementById('resposta-container');
+            const respostaTexto = document.getElementById('resposta-texto');
+
+            if (!pergunta) {
+                alert("Por favor, digite sua pergunta.");
+                return;
+            }
+
+            // Esconde a resposta anterior e mostra o loading
+            respostaContainer.style.display = 'none';
+            loading.style.display = 'block';
+            respostaTexto.textContent = '';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pergunta: pergunta,
+                        // Para esta entrega inicial, vamos omitir os "dados"
+                        // pois a lógica do Apify ainda não está conectada.
+                        // O seu backend já foi preparado para lidar com isso.
+                        dados: {} 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    // Exibe a resposta da IA
+                    respostaTexto.textContent = data.resposta.answer;
+                    respostaContainer.style.display = 'block';
+                } else {
+                    respostaTexto.textContent = `❌ Erro: ${data.erro}`;
+                    respostaContainer.style.display = 'block';
+                }
+            } catch (error) {
+                respostaTexto.textContent = '❌ Erro de conexão com o servidor.';
+                respostaContainer.style.display = 'block';
+            } finally {
+                // Esconde o loading, independente do resultado
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
