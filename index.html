@@ -1,334 +1,462 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>YouTube Analytics Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
-  <body>
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <div class="logo">
-            <div class="logo-icon">▶</div>
-            <h1>YouTube Analytics Pro</h1>
-          </div>
-          <div class="search-section">
-            <input 
-              type="text" 
-              id="searchInput" 
-              class="search-input" 
-              placeholder="Cole a URL do canal do YouTube..."
-            >
-            <button id="analyzeBtn" class="analyze-btn" disabled>
-              <span class="btn-text">🔍 Analisar</span>
-              <div class="spinner hidden"></div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIDWISE - Chat IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* --- Variáveis Globais de Design (Custom Properties) --- */
+        /* Centraliza todas as cores, fontes e valores de design para fácil manutenção. */
+        :root {
+            --background-color: #f5f5f5;      /* Cor de fundo principal da página. */
+            --container-bg: #ffffff;          /* Cor de fundo do container do chat. */
+            --text-color: #333;               /* Cor principal do texto. */
+            --text-light: #555;               /* Cor de texto mais clara para títulos. */
+            --border-color: #e1e5e9;           /* Cor para bordas e divisórias. */
+            --user-msg-bg: #333333;            /* Cor de fundo do balão de mensagem do usuário. */
+            --user-msg-text: #ffffff;         /* Cor do texto na mensagem do usuário. */
+            --ai-msg-bg: #f1f1f1;              /* Cor de fundo do balão de mensagem da IA. */
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* Fonte principal da aplicação. */
+            --border-radius-main: 16px;       /* Raio de borda para o container principal. */
+            --border-radius-msg: 20px;        /* Raio de borda para os balões de mensagem. */
+        }
 
-    <main class="container">
-      <div class="card channel-info">
-        <div class="channel-header">
-          <div class="avatar">
-            <img src="/youtube-creator-avatar.png" alt="TechCreator BR" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMzIiIGZpbGw9IiMwNmI2ZDQiLz4KPHRleHQgeD0iMzIiIHk9IjM4IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VEM8L3RleHQ+Cjwvc3ZnPgo='" />
-          </div>
-          <div class="channel-details">
-            <h2 class="channel-name">TechCreator BR</h2>
-            <p class="channel-description">Canal de tecnologia e programação</p>
-            <div class="channel-stats">
-              <div class="stat">
-                <span class="stat-icon">👥</span>
-                <span>125.4K inscritos</span>
-              </div>
-              <div class="stat">
-                <span class="stat-icon">👁</span>
-                <span>2.8M visualizações</span>
-              </div>
-              <div class="stat">
-                <span class="stat-icon">▶</span>
-                <span>156 vídeos</span>
-              </div>
+        /* --- Reset e Configurações Globais --- */
+        /* Garante que todos os elementos comecem sem margens ou paddings pré-definidos. */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* Faz com que padding e borda não aumentem o tamanho total do elemento. */
+        }
+
+        /* Define a altura do HTML para ocupar 100% da tela. */
+        html {
+            height: 100%;
+        }
+        
+        /* --- Corpo da Página (Body) --- */
+        /* Estiliza o corpo principal da página, definindo a aparência inicial. */
+        body {
+            font-family: var(--font-main);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh; /* Garante que o corpo ocupe no mínimo toda a altura da tela. */
+            display: flex; /* Habilita o Flexbox para alinhamento. */
+            justify-content: center; /* Centraliza o conteúdo horizontalmente. */
+            align-items: center; /* Centraliza o conteúdo verticalmente. */
+            padding: 20px;
+            transition: all 0.4s ease-in-out; /* Animação suave para a mudança de layout. */
+        }
+        
+        /* --- Estado Ativo do Chat --- */
+        /* Modifica o alinhamento do body quando o chat é iniciado. */
+        body.chat-active {
+            align-items: flex-start; /* Alinha o container principal ao topo. */
+            padding-top: 5vh; /* Adiciona um espaçamento no topo. */
+        }
+        
+        /* --- Estilos da Barra de Rolagem (Chrome/Safari) --- */
+        /* Customiza a aparência da barra de rolagem dentro do chat. */
+        #chat-container::-webkit-scrollbar {
+            width: 8px; /* Largura da barra. */
+        }
+        #chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1; /* Cor do trilho da barra. */
+            border-radius: 10px;
+        }
+        #chat-container::-webkit-scrollbar-thumb {
+            background: #ccc; /* Cor do "polegar" (a parte que se move). */
+            border-radius: 10px;
+        }
+        #chat-container::-webkit-scrollbar-thumb:hover {
+            background: #aaa; /* Cor do "polegar" ao passar o mouse. */
+        }
+        
+        /* --- Container Principal --- */
+        /* O contêiner que envolve toda a aplicação. */
+        .main-container {
+            display: flex;
+            flex-direction: column; /* Organiza os filhos em uma coluna. */
+            width: 100%;
+            max-width: 700px;
+            background-color: transparent; /* Começa transparente na tela inicial. */
+            box-shadow: none;
+            border-radius: var(--border-radius-main);
+            transition: all 0.4s ease-in-out;
+        }
+        
+        /* Estilo do container quando o chat está ativo. */
+        body.chat-active .main-container {
+            background-color: var(--container-bg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: 90vh; /* Define uma altura fixa para a visualização do chat. */
+            overflow: hidden; /* Esconde qualquer conteúdo que transborde. */
+        }
+        
+        /* --- Cabeçalho (Header) --- */
+        /* A seção superior que contém a logo e o título. */
+        .header {
+            padding: 40px 20px 20px 20px;
+            text-align: center;
+            flex-shrink: 0; /* Impede que o cabeçalho encolha. */
+        }
+        
+        /* Contêiner da Logo. */
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        /* Imagem da Logo com contorno. */
+        .logo-image {
+            width: 150px;
+            height: auto;
+            border: 5px solid var(--text-color);
+            border-radius: 8px;
+            padding: 0px;
+        }
+
+        /* Título "Como posso ajudar?". */
+        .title {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        /* --- Container do Chat --- */
+        /* A área onde as mensagens da conversa são exibidas. */
+        #chat-container {
+            display: none; /* Começa escondido. */
+            flex-grow: 1; /* Faz este container ocupar todo o espaço vertical disponível. */
+            padding: 20px;
+            overflow-y: auto; /* Adiciona uma barra de rolagem vertical quando necessário. */
+            flex-direction: column;
+            gap: 12px; /* Espaçamento entre as mensagens. */
+        }
+
+        /* Torna o chat visível quando o body tem a classe .chat-active. */
+        body.chat-active #chat-container {
+            display: flex;
+        }
+        
+        /* --- Animação de Entrada das Mensagens --- */
+        /* Define a animação de "fade in" e "slide up" para novas mensagens. */
+        @keyframes message-enter-anim {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Classe que aplica a animação. */
+        .message-enter {
+            animation: message-enter-anim 0.5s ease-out;
+        }
+        
+        /* --- Estilos Gerais das Mensagens --- */
+        /* Estilo base para todos os balões de mensagem. */
+        .message {
+            padding: 12px 18px;
+            border-radius: var(--border-radius-msg);
+            max-width: 80%;
+            line-height: 1.5;
+            word-wrap: break-word; /* Quebra palavras longas para evitar transbordamento. */
+        }
+        
+        /* Estilo para listas dentro das mensagens, garantindo o recuo. */
+        .message ul,
+        .message ol {
+            padding-left: 25px; 
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        
+        /* Estilo específico para as mensagens da IA (à esquerda). */
+        .message.ai-message {
+            background-color: var(--ai-msg-bg);
+            color: var(--text-color);
+            align-self: flex-start; /* Alinha à esquerda. */
+            border-bottom-left-radius: 4px; /* Pequeno detalhe de design no canto. */
+        }
+        
+        /* Estilo específico para as mensagens do usuário (à direita). */
+        .message.user-message {
+            background-color: var(--user-msg-bg);
+            color: var(--user-msg-text);
+            align-self: flex-end; /* Alinha à direita. */
+            border-bottom-right-radius: 4px; /* Pequeno detalhe de design no canto. */
+        }
+        
+        /* --- Indicador de "Digitando..." Animado --- */
+        /* Contêiner para a animação de três pontos. */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+        }
+        /* Estilo dos pontos animados. */
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #aaa;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing-anim 1.4s infinite ease-in-out both;
+        }
+        /* Atraso na animação para criar o efeito de onda. */
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        /* Animação que faz os pontos pulsarem. */
+        @keyframes typing-anim {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+        
+        /* --- Seção de Input de Mensagem --- */
+        /* Contêiner que envolve a caixa de texto e o botão de enviar. */
+        .search-container {
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            flex-shrink: 0; /* Impede que esta seção encolha. */
+        }
+        
+        /* Adiciona uma borda superior quando o chat está ativo. */
+        body.chat-active .search-container {
+             border-top: 1px solid var(--border-color);
+             max-width: 100%;
+        }
+        
+        /* Modifica o padding e adiciona borda no cabeçalho no modo chat. */
+        body.chat-active .header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        /* A caixa de input com cantos arredondados. */
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--container-bg);
+            border-radius: 25px;
+            padding: 16px 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Ícone de "+" decorativo. */
+        .plus-icon {
+            color: #999;
+            margin-right: 16px;
+            font-size: 1.25rem;
+            font-weight: 300;
+        }
+        
+        /* Campo de texto onde o usuário digita. */
+        .search-input {
+            flex: 1; /* Ocupa o espaço restante. */
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none; /* Remove a borda ao focar. */
+        }
+        
+        /* Texto de exemplo no campo de input. */
+        .search-input::placeholder {
+            color: #999;
+        }
+        
+        /* Botão para enviar a mensagem. */
+        .send-button {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0;
+            margin-left: 16px;
+            transition: color 0.2s ease;
+        }
+        
+        /* Efeito visual ao passar o mouse sobre o botão. */
+        .send-button:hover {
+            color: var(--text-color);
+        }
+        
+        /* --- Responsividade para Dispositivos Móveis --- */
+        /* Aplica estilos específicos quando a largura da tela é 768px ou menor. */
+        @media (max-width: 768px) {
+            body {
+                padding: 0; /* Remove o padding para ocupar a tela toda. */
+            }
+            body.chat-active {
+                padding-top: 0;
+            }
+            .main-container, body.chat-active .main-container {
+                height: 100vh; /* Faz o container ocupar 100% da altura da tela. */
+                max-height: 100vh;
+                border-radius: 0; /* Remove as bordas arredondadas. */
+            }
+            .search-box {
+                padding: 12px 18px; /* Reduz o padding do input em telas menores. */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <div class="logo">
+                <img src="assets/WhatsApp Image 2025-09-12 at 17.41.23.jpeg" alt="VidWise" class="logo-image">
             </div>
-          </div>
-          <div class="status-badge">Ativo</div>
+             <h1 class="title">Como posso ajudar?</h1>
         </div>
-      </div>
-
-      <div class="metrics-grid">
-        <div class="card metric-card">
-          <div class="metric-header">
-            <span class="metric-title">Visualizações (30d)</span>
-            <span class="metric-icon">👁</span>
-          </div>
-          <div class="metric-value">348.2K</div>
-          <p class="metric-change">+12.5% vs mês anterior</p>
-        </div>
-
-        <div class="card metric-card">
-          <div class="metric-header">
-            <span class="metric-title">Novos Inscritos</span>
-            <span class="metric-icon">👤</span>
-          </div>
-          <div class="metric-value">2.8K</div>
-          <p class="metric-change">+8.2% vs mês anterior</p>
-        </div>
-
-        <div class="card metric-card">
-          <div class="metric-header">
-            <span class="metric-title">Tempo Médio</span>
-            <span class="metric-icon">🕐</span>
-          </div>
-          <div class="metric-value">8:42</div>
-          <p class="metric-change">+15.3% vs mês anterior</p>
-        </div>
-
-        <div class="card metric-card">
-          <div class="metric-header">
-            <span class="metric-title">Taxa de Engajamento</span>
-            <span class="metric-icon">📈</span>
-          </div>
-          <div class="metric-value">4.8%</div>
-          <p class="metric-change">+2.1% vs mês anterior</p>
-        </div>
-      </div>
-
-      <div class="tabs-container">
-        <div class="tabs-list">
-          <button class="tab-trigger active" data-tab="overview">Visão Geral</button>
-          <button class="tab-trigger" data-tab="audience">Audiência</button>
-          <button class="tab-trigger" data-tab="content">Conteúdo</button>
-          <button class="tab-trigger" data-tab="geography">Geografia</button>
-        </div>
-
-        <div id="overview" class="tab-content active">
-          <div class="charts-grid">
-            <div class="card">
-              <div class="card-header">
-                <h3>Crescimento Mensal</h3>
-                <p>Visualizações e inscritos nos últimos 6 meses</p>
-              </div>
-              <div class="chart-container">
-                <canvas id="growthChart"></canvas>
-              </div>
+        
+        <div id="chat-container"></div>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <span class="plus-icon" aria-hidden="true">+</span>
+                <input type="text" class="search-input" id="questionInput" placeholder="Ex: me dê sugestões de vídeos...">
+                <button class="send-button" onclick="sendQuestion()" title="Enviar" aria-label="Enviar mensagem">
+                    &gt;
+                </button>
             </div>
-
-            <div class="card">
-              <div class="card-header">
-                <h3>Horários de Pico</h3>
-                <p>Engajamento por horário do dia</p>
-              </div>
-              <div class="chart-container">
-                <canvas id="peakHoursChart"></canvas>
-              </div>
-            </div>
-          </div>
         </div>
+    </div>
 
-        <div id="audience" class="tab-content">
-          <div class="charts-grid">
-            <div class="card">
-              <div class="card-header">
-                <h3>Faixa Etária</h3>
-                <p>Distribuição da audiência por idade</p>
-              </div>
-              <div class="chart-container">
-                <canvas id="ageChart"></canvas>
-              </div>
-            </div>
+    <script>
+        // URL da sua API para onde as perguntas serão enviadas.
+        const API_URL = "http://localhost:3001/pergunta";
+        
+        // --- Variáveis de Estado da Aplicação ---
+        let conversationHistory = []; // Array que armazena todo o histórico da conversa.
+        let isFirstMessage = true;    // Flag para controlar a transição da tela inicial para o chat.
 
-            <div class="card">
-              <div class="card-header">
-                <h3>Dados Demográficos</h3>
-                <p>Informações detalhadas da audiência</p>
-              </div>
-              <div class="demographics">
-                <div class="demo-item">
-                  <div class="demo-label">
-                    <span>Gênero Masculino</span>
-                    <span>68%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 68%"></div>
-                  </div>
+        // --- Referências a Elementos do DOM ---
+        // Guarda os elementos HTML em variáveis para acesso rápido.
+        const chatContainer = document.getElementById('chat-container');
+        const questionInput = document.getElementById('questionInput');
+        
+        /**
+         * Adiciona uma nova mensagem ao contêiner do chat.
+         * Esta função é otimizada para apenas adicionar o novo elemento, em vez de redesenhar todo o chat.
+         * @param {object} msg - O objeto da mensagem, ex: { role: 'user', content: 'Olá' }
+         */
+        function appendMessage(msg) {
+            const messageDiv = document.createElement('div');
+            // Adiciona as classes CSS necessárias para estilizar o balão de mensagem e a animação.
+            messageDiv.classList.add('message', msg.role === 'user' ? 'user-message' : 'ai-message', 'message-enter');
+            // Converte o conteúdo da mensagem de Markdown para HTML e o insere no elemento.
+            messageDiv.innerHTML = marked.parse(msg.content);
+            chatContainer.appendChild(messageDiv);
+            // Rola o chat para a parte inferior para que a última mensagem seja visível.
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        /**
+         * Exibe o indicador animado de "digitando...".
+         * É adicionado ao chat para mostrar ao usuário que a IA está processando a resposta.
+         */
+        function showLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-indicator'; // ID para fácil remoção posterior.
+            loadingDiv.classList.add('message', 'ai-message', 'message-enter');
+            loadingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
                 </div>
+            `;
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
 
-                <div class="demo-item">
-                  <div class="demo-label">
-                    <span>Gênero Feminino</span>
-                    <span>32%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 32%"></div>
-                  </div>
-                </div>
+        /**
+         * Remove o indicador de "digitando..." do chat.
+         * Chamado quando a resposta da IA é recebida.
+         */
+        function hideLoadingIndicator() {
+            const loadingDiv = document.getElementById('loading-indicator');
+            if (loadingDiv) loadingDiv.remove();
+        }
 
-                <div class="insights">
-                  <div class="insight">
-                    <span class="insight-icon">🎯</span>
-                    <span>Público principal: Desenvolvedores</span>
-                  </div>
-                  <div class="insight">
-                    <span class="insight-icon">📅</span>
-                    <span>Melhor dia: Terça-feira</span>
-                  </div>
-                  <div class="insight">
-                    <span class="insight-icon">⏰</span>
-                    <span>Melhor horário: 21:00</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        /**
+         * Função principal que gerencia o envio de uma pergunta.
+         * É chamada quando o usuário clica no botão de enviar ou pressiona Enter.
+         */
+        async function sendQuestion() {
+            const question = questionInput.value.trim(); // Pega o texto do input e remove espaços em branco.
+            if (question === '') return; // Não faz nada se a mensagem estiver vazia.
 
-        <div id="content" class="tab-content">
-          <div class="card">
-            <div class="card-header">
-              <h3>Vídeos com Melhor Performance</h3>
-              <p>Top 4 vídeos por visualizações nos últimos 30 dias</p>
-            </div>
-            <div class="videos-list">
-              <div class="video-item">
-                <div class="video-thumbnail">▶</div>
-                <div class="video-details">
-                  <h4>Como criar um app React em 2024</h4>
-                  <div class="video-stats">
-                    <span>👁 89.2K</span>
-                    <span>👍 3.4K</span>
-                    <span>⏰ 15:32</span>
-                  </div>
-                </div>
-                <div class="video-rank">#1</div>
-              </div>
+            // Se for a primeira mensagem, ativa o layout do chat.
+            if (isFirstMessage) {
+                document.body.classList.add('chat-active');
+                isFirstMessage = false;
+            }
+            
+            const userMessage = { role: 'user', content: question };
+            conversationHistory.push(userMessage); // Salva a mensagem no histórico.
+            appendMessage(userMessage); // Exibe a mensagem do usuário na tela.
+            
+            questionInput.value = ''; // Limpa o campo de input.
 
-              <div class="video-item">
-                <div class="video-thumbnail">▶</div>
-                <div class="video-details">
-                  <h4>TypeScript para iniciantes</h4>
-                  <div class="video-stats">
-                    <span>👁 76.8K</span>
-                    <span>👍 2.9K</span>
-                    <span>⏰ 22:15</span>
-                  </div>
-                </div>
-                <div class="video-rank">#2</div>
-              </div>
+            showLoadingIndicator(); // Mostra que a IA está "pensando".
 
-              <div class="video-item">
-                <div class="video-thumbnail">▶</div>
-                <div class="video-details">
-                  <h4>Deploy no Vercel em 5 minutos</h4>
-                  <div class="video-stats">
-                    <span>👁 65.1K</span>
-                    <span>👍 2.1K</span>
-                    <span>⏰ 8:45</span>
-                  </div>
-                </div>
-                <div class="video-rank">#3</div>
-              </div>
+            try {
+                // Faz a chamada (fetch) para a API, enviando a pergunta do usuário.
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pergunta: question, dados: {} })
+                });
 
-              <div class="video-item">
-                <div class="video-thumbnail">▶</div>
-                <div class="video-details">
-                  <h4>Next.js 14 - Novidades</h4>
-                  <div class="video-stats">
-                    <span>👁 58.9K</span>
-                    <span>👍 1.8K</span>
-                    <span>⏰ 18:20</span>
-                  </div>
-                </div>
-                <div class="video-rank">#4</div>
-              </div>
-            </div>
-          </div>
-        </div>
+                const data = await response.json(); // Converte a resposta da API para JSON.
+                
+                const aiMessage = { 
+                    role: 'ai', 
+                    content: data.ok ? data.resposta.answer : `❌ Erro: ${data.erro}`
+                };
+                conversationHistory.push(aiMessage); // Salva a resposta da IA no histórico.
 
-        <div id="geography" class="tab-content">
-          <div class="card">
-            <div class="card-header">
-              <h3>Principais Regiões</h3>
-              <p>Distribuição geográfica da audiência</p>
-            </div>
-            <div class="regions-list">
-              <div class="region-item">
-                <span class="region-flag">🇧🇷</span>
-                <div class="region-details">
-                  <div class="region-label">
-                    <span>Brasil</span>
-                    <span>68%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 68%"></div>
-                  </div>
-                </div>
-              </div>
+                // Adiciona um atraso artificial para a resposta parecer mais natural.
+                setTimeout(() => {
+                    hideLoadingIndicator();
+                    appendMessage(aiMessage); // Exibe a resposta da IA na tela.
+                }, 600); 
 
-              <div class="region-item">
-                <span class="region-flag">🇵🇹</span>
-                <div class="region-details">
-                  <div class="region-label">
-                    <span>Portugal</span>
-                    <span>12%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 12%"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="region-item">
-                <span class="region-flag">🇺🇸</span>
-                <div class="region-details">
-                  <div class="region-label">
-                    <span>Estados Unidos</span>
-                    <span>8%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 8%"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="region-item">
-                <span class="region-flag">🇦🇷</span>
-                <div class="region-details">
-                  <div class="region-label">
-                    <span>Argentina</span>
-                    <span>6%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 6%"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="region-item">
-                <span class="region-flag">🌍</span>
-                <div class="region-details">
-                  <div class="region-label">
-                    <span>Outros</span>
-                    <span>6%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 6%"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <script src="script.js"></script>
-  </body>
+            } catch (error) {
+                // Bloco executado se houver um erro de conexão com a API.
+                console.error('[v11] Erro de conexão:', error);
+                hideLoadingIndicator();
+                const errorMessage = { role: 'ai', content: '❌ Desculpe, ocorreu um erro de conexão com o servidor.' };
+                conversationHistory.push(errorMessage);
+                appendMessage(errorMessage);
+            }
+        }
+        
+        /**
+         * Adiciona um "ouvinte de eventos" ao campo de input.
+         * Permite que o usuário envie a mensagem pressionando a tecla Enter.
+         */
+        questionInput.addEventListener('keypress', function(e) {
+            // Verifica se a tecla pressionada foi 'Enter' e se a tecla 'Shift' não estava pressionada.
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Impede que o Enter crie uma nova linha no input.
+                sendQuestion(); // Chama a função para enviar a pergunta.
+            }
+        });
+    </script>
+</body>
 </html>
