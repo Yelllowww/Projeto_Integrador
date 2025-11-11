@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Analytics Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <div class="logo-icon">▶</div>
+            <h1>YouTube Analytics Pro</h1>
+          </div>
+          <div class="search-section">
+            <input 
+              type="text" 
+              id="searchInput" 
+              class="search-input" 
+              placeholder="Cole a URL do canal do YouTube..."
+            >
+            <button id="analyzeBtn" class="analyze-btn" disabled>
+              <span class="btn-text">🔍 Analisar</span>
+              <div class="spinner hidden"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="card channel-info">
+        <div class="channel-header">
+          <div class="avatar">
+            <img src="/youtube-creator-avatar.png" alt="TechCreator BR" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMzIiIGZpbGw9IiMwNmI2ZDQiLz4KPHRleHQgeD0iMzIiIHk9IjM4IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VEM8L3RleHQ+Cjwvc3ZnPgo='" />
+          </div>
+          <div class="channel-details">
+            <h2 class="channel-name">TechCreator BR</h2>
+            <p class="channel-description">Canal de tecnologia e programação</p>
+            <div class="channel-stats">
+              <div class="stat">
+                <span class="stat-icon">👥</span>
+                <span>125.4K inscritos</span>
+              </div>
+              <div class="stat">
+                <span class="stat-icon">👁</span>
+                <span>2.8M visualizações</span>
+              </div>
+              <div class="stat">
+                <span class="stat-icon">▶</span>
+                <span>156 vídeos</span>
+              </div>
+            </div>
+          </div>
+          <div class="status-badge">Ativo</div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="card metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Visualizações (30d)</span>
+            <span class="metric-icon">👁</span>
+          </div>
+          <div class="metric-value">348.2K</div>
+          <p class="metric-change">+12.5% vs mês anterior</p>
+        </div>
+
+        <div class="card metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Novos Inscritos</span>
+            <span class="metric-icon">👤</span>
+          </div>
+          <div class="metric-value">2.8K</div>
+          <p class="metric-change">+8.2% vs mês anterior</p>
+        </div>
+
+        <div class="card metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Tempo Médio</span>
+            <span class="metric-icon">🕐</span>
+          </div>
+          <div class="metric-value">8:42</div>
+          <p class="metric-change">+15.3% vs mês anterior</p>
+        </div>
+
+        <div class="card metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Taxa de Engajamento</span>
+            <span class="metric-icon">📈</span>
+          </div>
+          <div class="metric-value">4.8%</div>
+          <p class="metric-change">+2.1% vs mês anterior</p>
+        </div>
+      </div>
+
+      <div class="tabs-container">
+        <div class="tabs-list">
+          <button class="tab-trigger active" data-tab="overview">Visão Geral</button>
+          <button class="tab-trigger" data-tab="audience">Audiência</button>
+          <button class="tab-trigger" data-tab="content">Conteúdo</button>
+          <button class="tab-trigger" data-tab="geography">Geografia</button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Crescimento Mensal</h3>
+                <p>Visualizações e inscritos nos últimos 6 meses</p>
+              </div>
+              <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Horários de Pico</h3>
+                <p>Engajamento por horário do dia</p>
+              </div>
+              <div class="chart-container">
+                <canvas id="peakHoursChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="audience" class="tab-content">
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Faixa Etária</h3>
+                <p>Distribuição da audiência por idade</p>
+              </div>
+              <div class="chart-container">
+                <canvas id="ageChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Dados Demográficos</h3>
+                <p>Informações detalhadas da audiência</p>
+              </div>
+              <div class="demographics">
+                <div class="demo-item">
+                  <div class="demo-label">
+                    <span>Gênero Masculino</span>
+                    <span>68%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 68%"></div>
+                  </div>
+                </div>
+
+                <div class="demo-item">
+                  <div class="demo-label">
+                    <span>Gênero Feminino</span>
+                    <span>32%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 32%"></div>
+                  </div>
+                </div>
+
+                <div class="insights">
+                  <div class="insight">
+                    <span class="insight-icon">🎯</span>
+                    <span>Público principal: Desenvolvedores</span>
+                  </div>
+                  <div class="insight">
+                    <span class="insight-icon">📅</span>
+                    <span>Melhor dia: Terça-feira</span>
+                  </div>
+                  <div class="insight">
+                    <span class="insight-icon">⏰</span>
+                    <span>Melhor horário: 21:00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="content" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h3>Vídeos com Melhor Performance</h3>
+              <p>Top 4 vídeos por visualizações nos últimos 30 dias</p>
+            </div>
+            <div class="videos-list">
+              <div class="video-item">
+                <div class="video-thumbnail">▶</div>
+                <div class="video-details">
+                  <h4>Como criar um app React em 2024</h4>
+                  <div class="video-stats">
+                    <span>👁 89.2K</span>
+                    <span>👍 3.4K</span>
+                    <span>⏰ 15:32</span>
+                  </div>
+                </div>
+                <div class="video-rank">#1</div>
+              </div>
+
+              <div class="video-item">
+                <div class="video-thumbnail">▶</div>
+                <div class="video-details">
+                  <h4>TypeScript para iniciantes</h4>
+                  <div class="video-stats">
+                    <span>👁 76.8K</span>
+                    <span>👍 2.9K</span>
+                    <span>⏰ 22:15</span>
+                  </div>
+                </div>
+                <div class="video-rank">#2</div>
+              </div>
+
+              <div class="video-item">
+                <div class="video-thumbnail">▶</div>
+                <div class="video-details">
+                  <h4>Deploy no Vercel em 5 minutos</h4>
+                  <div class="video-stats">
+                    <span>👁 65.1K</span>
+                    <span>👍 2.1K</span>
+                    <span>⏰ 8:45</span>
+                  </div>
+                </div>
+                <div class="video-rank">#3</div>
+              </div>
+
+              <div class="video-item">
+                <div class="video-thumbnail">▶</div>
+                <div class="video-details">
+                  <h4>Next.js 14 - Novidades</h4>
+                  <div class="video-stats">
+                    <span>👁 58.9K</span>
+                    <span>👍 1.8K</span>
+                    <span>⏰ 18:20</span>
+                  </div>
+                </div>
+                <div class="video-rank">#4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="geography" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h3>Principais Regiões</h3>
+              <p>Distribuição geográfica da audiência</p>
+            </div>
+            <div class="regions-list">
+              <div class="region-item">
+                <span class="region-flag">🇧🇷</span>
+                <div class="region-details">
+                  <div class="region-label">
+                    <span>Brasil</span>
+                    <span>68%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 68%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="region-item">
+                <span class="region-flag">🇵🇹</span>
+                <div class="region-details">
+                  <div class="region-label">
+                    <span>Portugal</span>
+                    <span>12%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 12%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="region-item">
+                <span class="region-flag">🇺🇸</span>
+                <div class="region-details">
+                  <div class="region-label">
+                    <span>Estados Unidos</span>
+                    <span>8%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 8%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="region-item">
+                <span class="region-flag">🇦🇷</span>
+                <div class="region-details">
+                  <div class="region-label">
+                    <span>Argentina</span>
+                    <span>6%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 6%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="region-item">
+                <span class="region-flag">🌍</span>
+                <div class="region-details">
+                  <div class="region-label">
+                    <span>Outros</span>
+                    <span>6%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 6%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
