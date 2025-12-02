@@ -1,462 +1,1309 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIDWISE - Chat IA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        /* --- Variáveis Globais de Design (Custom Properties) --- */
-        /* Centraliza todas as cores, fontes e valores de design para fácil manutenção. */
-        :root {
-            --background-color: #f5f5f5;      /* Cor de fundo principal da página. */
-            --container-bg: #ffffff;          /* Cor de fundo do container do chat. */
-            --text-color: #333;               /* Cor principal do texto. */
-            --text-light: #555;               /* Cor de texto mais clara para títulos. */
-            --border-color: #e1e5e9;           /* Cor para bordas e divisórias. */
-            --user-msg-bg: #333333;            /* Cor de fundo do balão de mensagem do usuário. */
-            --user-msg-text: #ffffff;         /* Cor do texto na mensagem do usuário. */
-            --ai-msg-bg: #f1f1f1;              /* Cor de fundo do balão de mensagem da IA. */
-            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* Fonte principal da aplicação. */
-            --border-radius-main: 16px;       /* Raio de borda para o container principal. */
-            --border-radius-msg: 20px;        /* Raio de borda para os balões de mensagem. */
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VidWise - YouTube Analytics Dashboard</title>
 
-        /* --- Reset e Configurações Globais --- */
-        /* Garante que todos os elementos comecem sem margens ou paddings pré-definidos. */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box; /* Faz com que padding e borda não aumentem o tamanho total do elemento. */
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        /* Define a altura do HTML para ocupar 100% da tela. */
-        html {
-            height: 100%;
-        }
-        
-        /* --- Corpo da Página (Body) --- */
-        /* Estiliza o corpo principal da página, definindo a aparência inicial. */
-        body {
-            font-family: var(--font-main);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            min-height: 100vh; /* Garante que o corpo ocupe no mínimo toda a altura da tela. */
-            display: flex; /* Habilita o Flexbox para alinhamento. */
-            justify-content: center; /* Centraliza o conteúdo horizontalmente. */
-            align-items: center; /* Centraliza o conteúdo verticalmente. */
-            padding: 20px;
-            transition: all 0.4s ease-in-out; /* Animação suave para a mudança de layout. */
-        }
-        
-        /* --- Estado Ativo do Chat --- */
-        /* Modifica o alinhamento do body quando o chat é iniciado. */
-        body.chat-active {
-            align-items: flex-start; /* Alinha o container principal ao topo. */
-            padding-top: 5vh; /* Adiciona um espaçamento no topo. */
-        }
-        
-        /* --- Estilos da Barra de Rolagem (Chrome/Safari) --- */
-        /* Customiza a aparência da barra de rolagem dentro do chat. */
-        #chat-container::-webkit-scrollbar {
-            width: 8px; /* Largura da barra. */
-        }
-        #chat-container::-webkit-scrollbar-track {
-            background: #f1f1f1; /* Cor do trilho da barra. */
-            border-radius: 10px;
-        }
-        #chat-container::-webkit-scrollbar-thumb {
-            background: #ccc; /* Cor do "polegar" (a parte que se move). */
-            border-radius: 10px;
-        }
-        #chat-container::-webkit-scrollbar-thumb:hover {
-            background: #aaa; /* Cor do "polegar" ao passar o mouse. */
-        }
-        
-        /* --- Container Principal --- */
-        /* O contêiner que envolve toda a aplicação. */
-        .main-container {
-            display: flex;
-            flex-direction: column; /* Organiza os filhos em uma coluna. */
-            width: 100%;
-            max-width: 700px;
-            background-color: transparent; /* Começa transparente na tela inicial. */
-            box-shadow: none;
-            border-radius: var(--border-radius-main);
-            transition: all 0.4s ease-in-out;
-        }
-        
-        /* Estilo do container quando o chat está ativo. */
-        body.chat-active .main-container {
-            background-color: var(--container-bg);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            height: 90vh; /* Define uma altura fixa para a visualização do chat. */
-            overflow: hidden; /* Esconde qualquer conteúdo que transborde. */
-        }
-        
-        /* --- Cabeçalho (Header) --- */
-        /* A seção superior que contém a logo e o título. */
-        .header {
-            padding: 40px 20px 20px 20px;
-            text-align: center;
-            flex-shrink: 0; /* Impede que o cabeçalho encolha. */
-        }
-        
-        /* Contêiner da Logo. */
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        /* Imagem da Logo com contorno. */
-        .logo-image {
-            width: 150px;
-            height: auto;
-            border: 5px solid var(--text-color);
-            border-radius: 8px;
-            padding: 0px;
-        }
+<style>
+:root {
+    --background-color: #f5f5f5;
+    --container-bg: #ffffff;
+    --text-color: #333;
+    --text-light: #555;
+    --border-color: #e1e5e9;
+    --user-msg-bg: #333333;
+    --user-msg-text: #ffffff;
+    --ai-msg-bg: #f1f1f1;
+    --font-main: 'DM Sans', sans-serif;
+    --font-alt: 'Space Grotesk', sans-serif;
+    --border-radius-main: 16px;
+    --border-radius-msg: 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { height:100%; }
+body {
+    font-family: var(--font-main);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+}
 
-        /* Título "Como posso ajudar?". */
-        .title {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-        
-        /* --- Container do Chat --- */
-        /* A área onde as mensagens da conversa são exibidas. */
-        #chat-container {
-            display: none; /* Começa escondido. */
-            flex-grow: 1; /* Faz este container ocupar todo o espaço vertical disponível. */
-            padding: 20px;
-            overflow-y: auto; /* Adiciona uma barra de rolagem vertical quando necessário. */
-            flex-direction: column;
-            gap: 12px; /* Espaçamento entre as mensagens. */
-        }
+/* Removed theme-toggle button styling */
 
-        /* Torna o chat visível quando o body tem a classe .chat-active. */
-        body.chat-active #chat-container {
-            display: flex;
-        }
-        
-        /* --- Animação de Entrada das Mensagens --- */
-        /* Define a animação de "fade in" e "slide up" para novas mensagens. */
-        @keyframes message-enter-anim {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Classe que aplica a animação. */
-        .message-enter {
-            animation: message-enter-anim 0.5s ease-out;
-        }
-        
-        /* --- Estilos Gerais das Mensagens --- */
-        /* Estilo base para todos os balões de mensagem. */
-        .message {
-            padding: 12px 18px;
-            border-radius: var(--border-radius-msg);
-            max-width: 80%;
-            line-height: 1.5;
-            word-wrap: break-word; /* Quebra palavras longas para evitar transbordamento. */
-        }
-        
-        /* Estilo para listas dentro das mensagens, garantindo o recuo. */
-        .message ul,
-        .message ol {
-            padding-left: 25px; 
-            margin-top: 8px;
-            margin-bottom: 8px;
-        }
-        
-        /* Estilo específico para as mensagens da IA (à esquerda). */
-        .message.ai-message {
-            background-color: var(--ai-msg-bg);
-            color: var(--text-color);
-            align-self: flex-start; /* Alinha à esquerda. */
-            border-bottom-left-radius: 4px; /* Pequeno detalhe de design no canto. */
-        }
-        
-        /* Estilo específico para as mensagens do usuário (à direita). */
-        .message.user-message {
-            background-color: var(--user-msg-bg);
-            color: var(--user-msg-text);
-            align-self: flex-end; /* Alinha à direita. */
-            border-bottom-right-radius: 4px; /* Pequeno detalhe de design no canto. */
-        }
-        
-        /* --- Indicador de "Digitando..." Animado --- */
-        /* Contêiner para a animação de três pontos. */
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-        }
-        /* Estilo dos pontos animados. */
-        .typing-indicator span {
-            height: 8px;
-            width: 8px;
-            background-color: #aaa;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 2px;
-            animation: typing-anim 1.4s infinite ease-in-out both;
-        }
-        /* Atraso na animação para criar o efeito de onda. */
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        /* Animação que faz os pontos pulsarem. */
-        @keyframes typing-anim {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
-        }
-        
-        /* --- Seção de Input de Mensagem --- */
-        /* Contêiner que envolve a caixa de texto e o botão de enviar. */
-        .search-container {
-            padding: 20px;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            flex-shrink: 0; /* Impede que esta seção encolha. */
-        }
-        
-        /* Adiciona uma borda superior quando o chat está ativo. */
-        body.chat-active .search-container {
-             border-top: 1px solid var(--border-color);
-             max-width: 100%;
-        }
-        
-        /* Modifica o padding e adiciona borda no cabeçalho no modo chat. */
-        body.chat-active .header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        /* A caixa de input com cantos arredondados. */
-        .search-box {
-            display: flex;
-            align-items: center;
-            background-color: var(--container-bg);
-            border-radius: 25px;
-            padding: 16px 24px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-        
-        /* Ícone de "+" decorativo. */
-        .plus-icon {
-            color: #999;
-            margin-right: 16px;
-            font-size: 1.25rem;
-            font-weight: 300;
-        }
-        
-        /* Campo de texto onde o usuário digita. */
-        .search-input {
-            flex: 1; /* Ocupa o espaço restante. */
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1rem;
-            outline: none; /* Remove a borda ao focar. */
-        }
-        
-        /* Texto de exemplo no campo de input. */
-        .search-input::placeholder {
-            color: #999;
-        }
-        
-        /* Botão para enviar a mensagem. */
-        .send-button {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 1.25rem;
-            padding: 0;
-            margin-left: 16px;
-            transition: color 0.2s ease;
-        }
-        
-        /* Efeito visual ao passar o mouse sobre o botão. */
-        .send-button:hover {
-            color: var(--text-color);
-        }
-        
-        /* --- Responsividade para Dispositivos Móveis --- */
-        /* Aplica estilos específicos quando a largura da tela é 768px ou menor. */
-        @media (max-width: 768px) {
-            body {
-                padding: 0; /* Remove o padding para ocupar a tela toda. */
-            }
-            body.chat-active {
-                padding-top: 0;
-            }
-            .main-container, body.chat-active .main-container {
-                height: 100vh; /* Faz o container ocupar 100% da altura da tela. */
-                max-height: 100vh;
-                border-radius: 0; /* Remove as bordas arredondadas. */
-            }
-            .search-box {
-                padding: 12px 18px; /* Reduz o padding do input em telas menores. */
-            }
-        }
-    </style>
+/* Page visibility states with proper display switching */
+.chat-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    visibility: visible;
+    opacity: 1;
+}
+
+.chat-page.hidden {
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.dashboard-page {
+    display: none;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    padding: 0;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.dashboard-page.active {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+}
+
+.chat-page .main-container {
+    width: 100%;
+    max-width: 900px;
+    background-color: var(--container-bg);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-radius: var(--border-radius-main);
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    overflow: hidden;
+}
+
+.dashboard-page .main-container {
+    width: 100%;
+    max-width: 100%;
+    background-color: transparent;
+    box-shadow: none;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.header { padding:40px 20px 20px 20px; text-align:center; flex-shrink:0; }
+.header-content { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.logo { display:flex; align-items:center; justify-content:center; gap:12px; }
+.logo-image { width:150px; height:auto; border:5px solid var(--text-color); border-radius:8px; padding:0; }
+.logo h1 { font-size: 1.5rem; font-weight: 700; }
+
+.search-section { display: none; flex: 1; gap: 8px; }
+.dashboard-page .search-section { display: flex; }
+
+#backBtn { display: none; padding: 8px 16px; background: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.dashboard-page #backBtn { display: block; }
+
+#chat-container { display:flex; flex-grow:1; padding:20px; overflow-y:auto; flex-direction:column; gap:12px; }
+
+@keyframes message-enter-anim { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0);} }
+.message-enter { animation: message-enter-anim 0.5s ease-out; }
+
+.message { padding:12px 18px; border-radius:var(--border-radius-msg); max-width:80%; line-height:1.5; word-wrap:break-word; }
+.message ul, .message ol { padding-left:25px; margin-top:8px; margin-bottom:8px; }
+.message.ai-message { background-color:var(--ai-msg-bg); color:var(--text-color); align-self:flex-start; border-bottom-left-radius:4px; }
+.message.user-message { background-color:var(--user-msg-bg); color:var(--user-msg-text); align-self:flex-end; border-bottom-right-radius:4px; }
+
+.typing-indicator { display:flex; align-items:center; padding:15px 0; }
+.typing-indicator span { height:8px; width:8px; background-color:#aaa; border-radius:50%; display:inline-block; margin:0 2px; animation: typing-anim 1.4s infinite ease-in-out both; }
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; } .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes typing-anim { 0%,80%,100% { transform:scale(0);} 40% { transform:scale(1.0);} }
+
+.search-container { padding:20px; width:100%; flex-shrink:0; border-top: 1px solid var(--border-color); }
+
+.search-box { display:flex; align-items:center; background-color:var(--container-bg); border-radius:25px; padding:16px 16px; border:1px solid var(--border-color); box-shadow:0 2px 8px rgba(0,0,0,0.08); gap:8px; }
+.plus-icon { color:#999; margin-right:6px; font-size:1.25rem; font-weight:300; }
+.search-input { flex:1; background:none; border:none; color:var(--text-color); font-size:1rem; outline:none; }
+.search-input::placeholder { color:#999; }
+.send-button { background:none; border:none; color:#999; cursor:pointer; font-size:1.25rem; padding:8px 12px; border-radius:8px; }
+.send-button:hover { color:var(--text-color); }
+
+.yt-button { background:#10b981; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight: 600; }
+.yt-button:hover { opacity:0.95; }
+.yt-button:disabled { opacity:0.5; cursor:not-allowed; }
+
+.youtube-input-container { padding:10px 20px; width:100%; }
+
+.container {
+  max-width:1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.dashboard-page main { width: 100%; max-width: 100%; padding: 20px; }
+
+/* Updated metrics grid to center 5 cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.metric-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5db;
+}
+
+.metric-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.2;
+}
+
+.metric-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Result card with smooth show animation */
+#resultCard {
+  display: none;
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  animation: slideUp 0.3s ease-out;
+}
+
+#resultCard.show {
+  display: block;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.result-card img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.result-card h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.result-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+.result-card button {
+  padding: 10px 20px;
+  background: #e9ecef;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.result-card button:hover {
+  background: #d1d5db;
+}
+
+/* Channel Info Card */
+.channel-info {
+  background-color: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-main);
+  padding: 24px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.channel-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.channel-header .avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.channel-header .avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.channel-details {
+  flex: 1;
+}
+
+.channel-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.channel-description {
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.channel-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.channel-stats .stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.channel-stats .stat-icon {
+  color: #ef4444;
+  font-size: 1.2rem;
+}
+
+.status-badge {
+  background-color: #10b981;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Tabs Section */
+.tabs-container {
+  margin-top: 20px;
+}
+
+.tabs-list {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.tab-trigger {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.tab-trigger.active {
+  background-color: var(--text-color);
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.card-header p {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+/* Demographics */
+.demographics {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.demo-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.progress-bar {
+  background-color: #e2e8f0;
+  border-radius: 100px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background-color: #3b82f6;
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.3s ease-in-out;
+}
+
+.insights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.insight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.insight-icon {
+  font-size: 1.2rem;
+}
+
+/* Videos List */
+.videos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.video-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.video-item:hover {
+  background-color: #f1f5f9;
+}
+
+.video-thumbnail {
+  width: 40px;
+  height: 40px;
+  background-color: #cbd5e1;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.video-details {
+  flex: 1;
+}
+
+.video-details h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.video-stats {
+  font-size: 12px;
+  color: var(--text-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.video-rank {
+  font-size: 20px;
+  font-weight: 700;
+  color: #d1d5db;
+  margin-left: auto;
+}
+
+/* Geography */
+.regions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.region-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.region-flag {
+  font-size: 24px;
+}
+
+.region-details {
+  flex: 1;
+}
+
+.region-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+/* Responsive Adjustments */
+@media (max-width:768px) {
+    body { padding:0; }
+    .main-container, .chat-page .main-container { height:100vh; max-height:100vh; border-radius:0; }
+    .search-box { padding:12px 14px; }
+    .header-content { flex-direction: column; gap:16px; }
+    .logo-image { width: 100px; }
+    .search-section { width: 100%; }
+    .channel-header { flex-direction: column; text-align: center; }
+    .channel-stats { justify-content: center; }
+    .tabs-list { flex-wrap: wrap; justify-content: center; }
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .metric-card {
+    padding: 16px;
+  }
+  
+  .metric-value {
+    font-size: 28px;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-value {
+    font-size: 24px;
+  }
+
+  .search-box { flex-direction: column; }
+  .search-input { text-align: center; margin-bottom: 10px; }
+  .send-button { width: 100%; margin-top: 10px;}
+}
+</style>
 </head>
 <body>
-    <div class="main-container">
-        <div class="header">
-            <div class="logo">
-                <img src="assets/WhatsApp Image 2025-09-12 at 17.41.23.jpeg" alt="VidWise" class="logo-image">
-            </div>
-             <h1 class="title">Como posso ajudar?</h1>
-        </div>
-        
+
+    <!-- Removed theme toggle button -->
+
+    <!-- Chat Page -->
+    <div class="chat-page" id="chatPage">
+      <div class="main-container">
+        <header class="header">
+          <div class="logo">
+            <img src="assets/WhatsApp Image 2025-09-12 at 17.41.23.jpeg" alt="VidWise" class="logo-image">
+            <h1></h1>
+          </div>
+          <div style="text-align: center; margin-top: 20px; font-size: 24px; font-weight: 600;"></div>
+        </header>
+
         <div id="chat-container"></div>
-        
+
         <div class="search-container">
-            <div class="search-box">
-                <span class="plus-icon" aria-hidden="true">+</span>
-                <input type="text" class="search-input" id="questionInput" placeholder="Ex: me dê sugestões de vídeos...">
-                <button class="send-button" onclick="sendQuestion()" title="Enviar" aria-label="Enviar mensagem">
-                    &gt;
-                </button>
-            </div>
+          <div class="search-box">
+            <span class="plus-icon">+</span>
+            <input type="text" id="chatInput" class="search-input" placeholder="Pergunte alguma coisa">
+            <button class="send-button" onclick="sendChatMessage()">➤</button>
+          </div>
         </div>
+
+        <div class="youtube-input-container">
+          <div style="display: flex; gap: 8px; align-items: stretch;">
+            <input type="text" id="youtubeUrlInput" class="search-input" placeholder="Insira o link do seu canal aqui..." style="flex: 1; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+            <button class="yt-button" onclick="goToDashboard()">BUSCAR</button>
+          </div>
+        </div>
+
+        <!-- Result Card -->
+        <div id="resultCard">
+          <div class="result-card">
+            <img id="resultAvatar" src="https://placeholder.svg?height=64&width=64&query=channel" alt="Canal">
+            <div style="flex: 1;">
+              <h3 id="resultChannelName">Seu Canal</h3>
+              <p id="resultChannelUrl">https://www.youtube.com/channel/...</p>
+            </div>
+            <button onclick="analyzeFromResult()">Analisar métricas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div class="dashboard-page" id="dashboardPage">
+      <header class="header">
+        <div class="header-content">
+          <div class="logo">
+            <img src="assets/WhatsApp Image 2025-09-12 at 17.41.23.jpeg" alt="VidWise" class="logo-image" style="width: 48px;">
+            <h1 style="font-size: 1.25rem;">VidWise</h1>
+          </div>
+          <div class="search-section">
+            <input type="text" id="searchInput" class="search-input" placeholder="Cole a URL do canal do YouTube..." style="border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;">
+            <button id="analyzeBtn" class="yt-button" onclick="triggerAnalyzeUrl()">
+              <span class="btn-text">Analisar</span>
+            </button>
+          </div>
+          <button id="backBtn" onclick="backToChat()">← Voltar</button>
+        </div>
+      </header>
+
+      <main class="container">
+        <!-- Updated channel info card to display dynamic data from API -->
+        <div class="card channel-info">
+          <div class="channel-header">
+            <div class="avatar">
+              <img id="channelAvatar" src="https://placeholder.svg?height=80&width=80&query=channel-avatar" alt="Canal" />
+            </div>
+            <div class="channel-details">
+              <h2 class="channel-name" id="dashChannelName">Seu Canal</h2>
+              <p class="channel-description" id="dashChannelDesc">Descrição não disponível</p>
+              <div class="channel-stats">
+                <div class="stat">
+                  <span id="dashStatSubs">0 inscritos</span>
+                </div>
+                <div class="stat">
+                  <span id="dashStatViews">0 visualizações</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-icon">▶</span>
+                  <span id="dashStatVideos">0 vídeos</span>
+                </div>
+              </div>
+            </div>
+            <div class="status-badge">Ativo</div>
+          </div>
+        </div>
+
+        <!-- Updated metrics grid to show only 5 cards -->
+        <div class="metrics-grid">
+          <div class="card metric-card">
+            <div class="metric-title">Quantidade de Vídeos</div>
+            <div class="metric-value" id="dashMetric-videos">0</div>
+            <p class="metric-description">Videos publicados</p>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-title">Total de Views</div>
+            <div class="metric-value" id="dashMetric-views">0</div>
+            <p class="metric-description">Visualizações totais</p>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-title">Inscritos</div>
+            <div class="metric-value" id="dashMetric-subs">0</div>
+            <p class="metric-description">Subscribers</p>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-title">Tempo Médio</div>
+            <div class="metric-value" id="dashMetric-avgTime">0</div>
+            <p class="metric-description">Tempo médio de assista</p>
+          </div>
+
+          <div class="card metric-card">
+            <div class="metric-title">Duração Média</div>
+            <div class="metric-value" id="dashMetric-avgDuration">0</div>
+            <p class="metric-description">Duração média dos vídeos</p>
+          </div>
+        </div>
+
+        <!-- Tabs Section -->
+        <div class="tabs-container">
+          <div class="tabs-list">
+            <button class="tab-trigger active" data-tab="overview">Visão Geral</button>
+            <button class="tab-trigger" data-tab="audience">Audiência</button>
+            <button class="tab-trigger" data-tab="content">Conteúdo</button>
+            <button class="tab-trigger" data-tab="geography">Geografia</button>
+          </div>
+
+          <div id="overview" class="tab-content active">
+            <div class="charts-grid">
+              <div class="card">
+                <div class="card-header">
+                  <h3>Crescimento Mensal</h3>
+                  <p>Visualizações e inscritos nos últimos 6 meses</p>
+                </div>
+                <div class="chart-container">
+                  <canvas id="growthChart"></canvas>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h3>Horários de Pico</h3>
+                  <p>Engajamento por horário do dia</p>
+                </div>
+                <div class="chart-container">
+                  <canvas id="peakHoursChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+
+              <div class="card">
+                <div class="card-header">
+                  <h3>Dados Demográficos</h3>
+                  <p>Informações detalhadas da audiência</p>
+                </div>
+                <div class="demographics">
+                  <div class="demo-item">
+                    <div class="demo-label">
+                      <span>Gênero Masculino</span>
+                      <span>68%</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 68%;"></div>
+                    </div>
+                  </div>
+                  <div class="demo-item">
+                    <div class="demo-label">
+                      <span>Gênero Feminino</span>
+                      <span>32%</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 32%;"></div>
+                    </div>
+                  </div>
+                  <div class="insights">
+                    <div class="insight">
+                      <span class="insight-icon"></span>
+                      <span>Público principal: Desenvolvedores</span>
+                    </div>
+                    <div class="insight">
+                      <span class="insight-icon"></span>
+                      <span>Melhor dia: Terça-feira</span>
+                    </div>
+                    <div class="insight">
+                      <span class="insight-icon"></span>
+                      <span>Melhor horário: 21:00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="content" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3>Vídeos Mais Vistos</h3>
+                <p>Top vídeos por performance com métricas detalhadas</p>
+              </div>
+              <div class="videos-list" id="dashVideosList"></div>
+            </div>
+          </div>
+
+          <div id="geography" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <h3>Principais Regiões</h3>
+                <p>Distribuição geográfica da audiência</p>
+              </div>
+              <div class="regions-list">
+                <div class="region-item">
+                  <div class="region-flag">🇧🇷</div>
+                  <div class="region-details">
+                    <div class="region-label">
+                      <span>Brasil</span>
+                      <span>68%</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 68%;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="region-item">
+                  <div class="region-flag">🇵🇹</div>
+                  <div class="region-details">
+                    <div class="region-label">
+                      <span>Portugal</span>
+                      <span>12%</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 12%;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="region-item">
+                  <div class="region-flag">🇺🇸</div>
+                  <div class="region-details">
+                    <div class="region-label">
+                      <span>Estados Unidos</span>
+                      <span>8%</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 8%;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="region-item">
+                  <div class="region-flag">🇦🇷</div>
+                  <div class="region-details">
+                    <div class="region-label">
+                      <span>Argentina</span>
+                      <span>6%</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 6%;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="region-item">
+                  <div class="region-flag">🌍</div>
+                  <div class="region-details">
+                    <div class="region-label">
+                      <span>Outros</span>
+                      <span>6%</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 6%;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
     <script>
-        // URL da sua API para onde as perguntas serão enviadas.
-        const API_URL = "http://localhost:3001/pergunta";
-        
-        // --- Variáveis de Estado da Aplicação ---
-        let conversationHistory = []; // Array que armazena todo o histórico da conversa.
-        let isFirstMessage = true;    // Flag para controlar a transição da tela inicial para o chat.
+      const API_YOUTUBE = "http://localhost:3001/youtube";
+      const API_PERGUNTA = "http://localhost:3001/pergunta";
+      const chatInput = document.getElementById('chatInput');
+      const youtubeUrlInput = document.getElementById('youtubeUrlInput');
+      const resultCard = document.getElementById('resultCard');
+      const chatPage = document.getElementById('chatPage');
+      const dashboardPage = document.getElementById('dashboardPage');
+      
+      let currentChartInstances = {};
+      let currentChannelData = {};
+      let monthlyGrowthData = null;
 
-        // --- Referências a Elementos do DOM ---
-        // Guarda os elementos HTML em variáveis para acesso rápido.
-        const chatContainer = document.getElementById('chat-container');
-        const questionInput = document.getElementById('questionInput');
-        
-        /**
-         * Adiciona uma nova mensagem ao contêiner do chat.
-         * Esta função é otimizada para apenas adicionar o novo elemento, em vez de redesenhar todo o chat.
-         * @param {object} msg - O objeto da mensagem, ex: { role: 'user', content: 'Olá' }
-         */
-        function appendMessage(msg) {
-            const messageDiv = document.createElement('div');
-            // Adiciona as classes CSS necessárias para estilizar o balão de mensagem e a animação.
-            messageDiv.classList.add('message', msg.role === 'user' ? 'user-message' : 'ai-message', 'message-enter');
-            // Converte o conteúdo da mensagem de Markdown para HTML e o insere no elemento.
-            messageDiv.innerHTML = marked.parse(msg.content);
-            chatContainer.appendChild(messageDiv);
-            // Rola o chat para a parte inferior para que a última mensagem seja visível.
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+      function goToDashboard() {
+        const url = youtubeUrlInput.value.trim();
+        if (!url) {
+          alert('Por favor, cole uma URL do canal YouTube.');
+          return;
         }
         
-        /**
-         * Exibe o indicador animado de "digitando...".
-         * É adicionado ao chat para mostrar ao usuário que a IA está processando a resposta.
-         */
-        function showLoadingIndicator() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'loading-indicator'; // ID para fácil remoção posterior.
-            loadingDiv.classList.add('message', 'ai-message', 'message-enter');
-            loadingDiv.innerHTML = `
-                <div class="typing-indicator">
-                    <span></span><span></span><span></span>
+        fetchChannelInfo(url);
+      }
+
+      async function fetchChannelInfo(url) {
+        try {
+          const resp = await fetch(API_YOUTUBE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+          });
+          const data = await resp.json();
+          if (!data.ok) throw new Error(data.erro || 'Resposta inválida');
+
+          const ch = data.channel || {};
+          currentChannelData = data;
+
+          document.getElementById('resultChannelName').innerText = ch.title || 'Canal';
+          document.getElementById('resultChannelUrl').innerText = url;
+          if (ch.avatarUrl) {
+            document.getElementById('resultAvatar').src = ch.avatarUrl;
+          }
+
+          resultCard.classList.add('show');
+          resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        } catch (err) {
+          alert('Erro ao buscar canal: ' + (err.message || err));
+        }
+      }
+
+      function analyzeFromResult() {
+        if (!currentChannelData || !currentChannelData.channel) {
+          alert('Erro: dados do canal não disponíveis.');
+          return;
+        }
+
+        // Hide chat page, show dashboard
+        chatPage.classList.add('hidden');
+        dashboardPage.classList.add('active');
+        
+        populateDashboard(currentChannelData);
+        destroyCharts();
+        setTimeout(() => initializeCharts(), 100);
+      }
+
+      function backToChat() {
+        // Hide dashboard, show chat
+        dashboardPage.classList.remove('active');
+        chatPage.classList.remove('hidden');
+        
+        // Clear inputs and result card
+        youtubeUrlInput.value = '';
+        chatInput.value = '';
+        resultCard.classList.remove('show');
+        
+        // Clean up charts
+        destroyCharts();
+      }
+
+      function populateDashboard(data) {
+        const ch = data.channel || {};
+        const videos = data.videos || [];
+
+        document.getElementById('dashChannelName').innerText = ch.title || 'Canal';
+        document.getElementById('dashChannelDesc').innerText = ch.description || 'Descrição não disponível';
+        document.getElementById('dashStatSubs').innerText = formatNumber(ch.subscribers || 0) + ' inscritos';
+        document.getElementById('dashStatViews').innerText = formatNumber(ch.channelTotalViews || 0) + ' visualizações';
+        document.getElementById('dashStatVideos').innerText = (ch.channelTotalVideos || videos.length) + ' vídeos';
+
+        if (ch.avatarUrl) {
+          document.getElementById('channelAvatar').src = ch.avatarUrl;
+        }
+
+        const durations = videos.map(v => parseDuration(v.duration));
+        const avgDuration = durations.length ? (durations.reduce((a, b) => a + b, 0) / durations.length) : 0;
+
+        document.getElementById('dashMetric-videos').innerText = (ch.channelTotalVideos || videos.length);
+        document.getElementById('dashMetric-views').innerText = formatNumber(ch.channelTotalViews || 0);
+        document.getElementById('dashMetric-subs').innerText = formatNumber(ch.subscribers || 0);
+        document.getElementById('dashMetric-avgTime').innerText = avgDuration.toFixed(1) + ' min';
+        document.getElementById('dashMetric-avgDuration').innerText = avgDuration.toFixed(1) + ' min';
+
+        monthlyGrowthData = generateMonthlyGrowthData(videos, ch);
+
+        let videosHtml = '';
+        const topVideos = [...videos].sort((a, b) => Number(b.viewCount || 0) - Number(a.viewCount || 0)).slice(0, 10);
+        topVideos.forEach((v, idx) => {
+          videosHtml += `
+            <div class="video-item">
+              <div class="video-thumbnail">▶</div>
+              <div class="video-details">
+                <h4>${escapeHtml(v.title)}</h4>
+                <div class="video-stats">
+                  <span>${formatNumber(Number(v.viewCount || 0))} views</span>
+                  <span>${formatNumber(Number(v.likeCount || 0))} likes</span>
+                  <span>${formatNumber(Number(v.commentCount || 0))} comentários</span>
+                  <span>${v.duration || '-'} duração</span>
+                  <span>${v.date || '-'}</span>
                 </div>
-            `;
-            chatContainer.appendChild(loadingDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        /**
-         * Remove o indicador de "digitando..." do chat.
-         * Chamado quando a resposta da IA é recebida.
-         */
-        function hideLoadingIndicator() {
-            const loadingDiv = document.getElementById('loading-indicator');
-            if (loadingDiv) loadingDiv.remove();
-        }
-
-        /**
-         * Função principal que gerencia o envio de uma pergunta.
-         * É chamada quando o usuário clica no botão de enviar ou pressiona Enter.
-         */
-        async function sendQuestion() {
-            const question = questionInput.value.trim(); // Pega o texto do input e remove espaços em branco.
-            if (question === '') return; // Não faz nada se a mensagem estiver vazia.
-
-            // Se for a primeira mensagem, ativa o layout do chat.
-            if (isFirstMessage) {
-                document.body.classList.add('chat-active');
-                isFirstMessage = false;
-            }
-            
-            const userMessage = { role: 'user', content: question };
-            conversationHistory.push(userMessage); // Salva a mensagem no histórico.
-            appendMessage(userMessage); // Exibe a mensagem do usuário na tela.
-            
-            questionInput.value = ''; // Limpa o campo de input.
-
-            showLoadingIndicator(); // Mostra que a IA está "pensando".
-
-            try {
-                // Faz a chamada (fetch) para a API, enviando a pergunta do usuário.
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pergunta: question, dados: {} })
-                });
-
-                const data = await response.json(); // Converte a resposta da API para JSON.
-                
-                const aiMessage = { 
-                    role: 'ai', 
-                    content: data.ok ? data.resposta.answer : `❌ Erro: ${data.erro}`
-                };
-                conversationHistory.push(aiMessage); // Salva a resposta da IA no histórico.
-
-                // Adiciona um atraso artificial para a resposta parecer mais natural.
-                setTimeout(() => {
-                    hideLoadingIndicator();
-                    appendMessage(aiMessage); // Exibe a resposta da IA na tela.
-                }, 600); 
-
-            } catch (error) {
-                // Bloco executado se houver um erro de conexão com a API.
-                console.error('[v11] Erro de conexão:', error);
-                hideLoadingIndicator();
-                const errorMessage = { role: 'ai', content: '❌ Desculpe, ocorreu um erro de conexão com o servidor.' };
-                conversationHistory.push(errorMessage);
-                appendMessage(errorMessage);
-            }
-        }
-        
-        /**
-         * Adiciona um "ouvinte de eventos" ao campo de input.
-         * Permite que o usuário envie a mensagem pressionando a tecla Enter.
-         */
-        questionInput.addEventListener('keypress', function(e) {
-            // Verifica se a tecla pressionada foi 'Enter' e se a tecla 'Shift' não estava pressionada.
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Impede que o Enter crie uma nova linha no input.
-                sendQuestion(); // Chama a função para enviar a pergunta.
-            }
+              </div>
+              <div class="video-rank">#${idx + 1}</div>
+            </div>
+          `;
         });
+        document.getElementById('dashVideosList').innerHTML = videosHtml;
+      }
+
+      function generateMonthlyGrowthData(videos, channelInfo) {
+        const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+        const viewsData = [];
+        const subsData = [];
+
+        for (let i = 0; i < months.length; i++) {
+          const monthVideos = videos.filter(v => {
+            if (!v.date) return false;
+            const videoMonth = new Date(v.date).getMonth();
+            const currentMonth = new Date().getMonth();
+            const monthOffset = (currentMonth - i);
+            return videoMonth === ((12 + monthOffset) % 12);
+          });
+
+          if (monthVideos.length > 0) {
+            const monthViews = monthVideos.reduce((sum, v) => sum + (Number(v.viewCount) || 0), 0);
+            viewsData.push(Math.round(monthViews / monthVideos.length));
+            subsData.push(Math.round((channelInfo.subscribers || 0) / months.length * (i + 1)));
+          } else {
+            viewsData.push(0);
+            subsData.push(Math.round((channelInfo.subscribers || 0) / months.length * (i + 1)));
+          }
+        }
+
+        return { labels: months, views: viewsData, subs: subsData };
+      }
+
+      function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+      }
+
+      function parseDuration(d) {
+        if (!d) return 0;
+        const p = d.split(':').map(v => parseInt(v, 10));
+        if (p.length === 2) return p[0] + p[1] / 60;
+        if (p.length === 3) return p[0] * 60 + p[1] + p[2] / 60;
+        return 0;
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      }
+
+      function triggerAnalyzeUrl() {
+        const url = document.getElementById('searchInput').value.trim();
+        if (!url) {
+          alert('Por favor, cole uma URL do canal YouTube.');
+          return;
+        }
+        analyzeYoutube(url);
+      }
+
+      async function analyzeYoutube(url) {
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        analyzeBtn.disabled = true;
+        const originalText = analyzeBtn.innerText;
+        analyzeBtn.innerHTML = '<span class="spinner"></span>';
+
+        try {
+          const resp = await fetch(API_YOUTUBE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+          });
+          const data = await resp.json();
+          if (!data.ok) throw new Error(data.erro || 'Resposta inválida');
+
+          currentChannelData = data;
+          populateDashboard(data);
+
+          destroyCharts();
+          setTimeout(() => initializeCharts(), 100);
+          document.querySelector('.dashboard-page main').scrollTop = 0;
+
+        } catch (err) {
+          alert('Erro ao processar canal: ' + (err.message || err));
+        } finally {
+          analyzeBtn.disabled = false;
+          analyzeBtn.innerHTML = originalText;
+        }
+      }
+
+      function destroyCharts() {
+        Object.values(currentChartInstances).forEach(chart => {
+          if (chart) chart.destroy();
+        });
+        currentChartInstances = {};
+      }
+
+      function getChartColors() {
+        return {
+          textColor: '#64748b',
+          borderColor: '#e2e8f0',
+          primaryGradientStart: '#2563eb',
+          primaryGradientEnd: '#3b82f6',
+          secondaryGradientStart: '#64748b',
+          secondaryGradientEnd: '#94a3b8',
+          backgroundAlpha: 'rgba(37, 99, 235, 0.1)',
+        };
+      }
+
+      function createGradient(ctx, colorStart, colorEnd) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, colorStart);
+        gradient.addColorStop(1, colorEnd);
+        return gradient;
+      }
+
+      function initializeCharts() {
+        const colors = getChartColors();
+        Chart.defaults.color = colors.textColor;
+        Chart.defaults.borderColor = colors.borderColor;
+
+        const growthData = monthlyGrowthData || {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+          views: [45000, 52000, 48000, 61000, 55000, 67000],
+          subs: [1200, 1800, 1500, 2200, 1900, 2800]
+        };
+
+        const ctxGrowth = document.getElementById('growthChart')?.getContext('2d');
+        if (ctxGrowth) {
+          currentChartInstances.growth = new Chart(ctxGrowth, {
+            type: 'bar',
+            data: {
+              labels: growthData.labels,
+              datasets: [{
+                label: 'Visualizações',
+                data: growthData.views,
+                backgroundColor: createGradient(ctxGrowth, colors.primaryGradientStart, colors.primaryGradientEnd),
+                borderRadius: 8,
+                borderWidth: 0,
+              }, {
+                label: 'Inscritos',
+                data: growthData.subs,
+                backgroundColor: createGradient(ctxGrowth, colors.secondaryGradientStart, colors.secondaryGradientEnd),
+                borderRadius: 8,
+                borderWidth: 0,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'top', labels: { padding: 15, font: { size: 13, weight: '600' } } },
+              },
+              scales: {
+                y: { beginAtZero: true, grid: { color: colors.borderColor } },
+                x: { grid: { display: false } },
+              },
+            }
+          });
+        }
+
+        const ctxPeakHours = document.getElementById('peakHoursChart')?.getContext('2d');
+        if (ctxPeakHours) {
+          currentChartInstances.peakHours = new Chart(ctxPeakHours, {
+            type: 'line',
+            data: {
+              labels: ['06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '00:00'],
+              datasets: [{
+                label: 'Engajamento (%)',
+                data: [15, 35, 60, 45, 85, 95, 25],
+                borderColor: colors.primaryGradientStart,
+                backgroundColor: colors.backgroundAlpha,
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: colors.primaryGradientStart,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'top', labels: { padding: 15, font: { size: 13, weight: '600' } } } },
+              scales: {
+                y: { beginAtZero: true, max: 100, grid: { color: colors.borderColor } },
+                x: { grid: { color: colors.borderColor, lineWidth: 0.5 } },
+              },
+            }
+          });
+        }
+
+        const ctxAge = document.getElementById('ageChart')?.getContext('2d');
+        if (ctxAge) {
+          const ageColors = ['#2563eb', '#8b5cf6', '#3b82f6', '#a78bfa'];
+          
+          currentChartInstances.age = new Chart(ctxAge, {
+            type: 'doughnut',
+            data: {
+              labels: ['18-24', '25-34', '35-44', '45+'],
+              datasets: [{
+                data: [35, 45, 15, 5],
+                backgroundColor: ageColors,
+                borderWidth: 0,
+                hoverOffset: 8,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', labels: { padding: 15, font: { size: 13, weight: '600' } } } },
+            }
+          });
+        }
+      }
+
+      function sendChatMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        
+        const container = document.getElementById('chat-container');
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message user-message message-enter';
+        userMsg.innerText = message;
+        container.appendChild(userMsg);
+        
+        chatInput.value = '';
+        container.scrollTop = container.scrollHeight;
+        
+        setTimeout(async () => {
+          const typingDiv = document.createElement('div');
+          typingDiv.className = 'typing-indicator';
+          typingDiv.innerHTML = '<span></span><span></span><span></span>';
+          container.appendChild(typingDiv);
+          container.scrollTop = container.scrollHeight;
+          
+          try {
+            const response = await fetch(API_PERGUNTA, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                  pergunta: message,
+                  dados: {}
+               })
+            });
+
+            typingDiv.remove();
+            
+            const data = await response.json();
+            const aiContent = data.ok
+                ? (data.resposta?.answer || JSON.stringify(data.resposta))
+               : `❌ Erro: ${data.erro || 'Resposta inválida'}`;
+
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'message ai-message message-enter';
+            aiMsg.innerText = aiContent;
+
+            container.appendChild(aiMsg);
+            container.scrollTop = container.scrollHeight;
+
+          } catch (err) {
+            typingDiv.remove();
+            
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'message ai-message message-enter';
+            aiMsg.innerText = 'Desculpe, houve um erro ao conectar com a IA. Verifique se o servidor está rodando.';
+            container.appendChild(aiMsg);
+            container.scrollTop = container.scrollHeight;
+          }
+        }, 300);
+      }
+
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendChatMessage();
+      });
+
+      document.querySelectorAll('.tab-trigger').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.getAttribute('data-tab');
+          document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(tabName).classList.add('active');
+        });
+      });
     </script>
 </body>
 </html>
