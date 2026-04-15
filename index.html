@@ -35,6 +35,20 @@ body {
     min-height: 100vh;
 }
 
+<<<<<<< HEAD
+.chat-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    visibility: visible;
+    opacity: 1;
+}
+
+=======
 /* Removed theme-toggle button styling */
 
 /* Page visibility states with proper display switching */
@@ -50,6 +64,7 @@ body {
     opacity: 1;
 }
 
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
 .chat-page.hidden {
     display: none;
     visibility: hidden;
@@ -135,6 +150,74 @@ body {
 
 .youtube-input-container { padding:10px 20px; width:100%; }
 
+<<<<<<< HEAD
+.container { max-width:1280px; margin: 0 auto; padding: 0 20px; }
+
+.dashboard-page main { width: 100%; max-width: 100%; padding: 20px; }
+
+.metrics-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 40px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+.metric-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; transition: all 0.3s ease; }
+.metric-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border-color: #d1d5db; }
+.metric-title { font-size: 12px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-value { font-size: 36px; font-weight: 700; color: #1f2937; line-height: 1.2; }
+.metric-description { font-size: 14px; color: #6b7280; margin: 0; line-height: 1.4; }
+
+#resultCard { display: none; padding: 20px; border-top: 1px solid var(--border-color); animation: slideUp 0.3s ease-out; }
+#resultCard.show { display: block; }
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.result-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.result-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.result-card h3 { margin: 0; font-size: 18px; font-weight: 600; color: var(--text-color); }
+.result-card p { margin: 0; font-size: 13px; color: #666; margin-top: 4px; word-break: break-all; }
+.result-card button { padding: 10px 20px; background: #e9ecef; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; white-space: nowrap; transition: all 0.2s; }
+.result-card button:hover { background: #d1d5db; }
+
+.channel-info { background-color: var(--container-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius-main); padding: 24px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 16px; }
+.channel-header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.channel-header .avatar { width: 80px; height: 80px; border-radius: 50%; background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.channel-header .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.channel-details { flex: 1; }
+.channel-name { font-size: 24px; font-weight: 700; color: var(--text-color); margin-bottom: 4px; }
+.channel-description { font-size: 14px; color: var(--text-light); line-height: 1.5; margin-bottom: 12px; }
+.channel-stats { display: flex; gap: 16px; font-size: 14px; font-weight: 600; color: var(--text-color); }
+.channel-stats .stat { display: flex; align-items: center; gap: 6px; }
+.channel-stats .stat-icon { color: #ef4444; font-size: 1.2rem; }
+.status-badge { background-color: #10b981; color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+.tabs-container { margin-top: 20px; }
+.tabs-list { display: flex; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+.tab-trigger { background: none; border: none; font-size: 16px; font-weight: 600; color: var(--text-light); cursor: pointer; padding: 8px 16px; border-radius: 8px; transition: all 0.2s ease; }
+.tab-trigger.active { background-color: var(--text-color); color: white; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+.card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+.card-header { margin-bottom: 16px; }
+.card-header h3 { font-size: 20px; font-weight: 700; color: var(--text-color); margin-bottom: 4px; }
+.card-header p { font-size: 14px; color: var(--text-light); }
+.chart-container { height: 300px; position: relative; }
+
+.demographics, .regions-list, .videos-list { display: flex; flex-direction: column; gap: 16px; }
+.demo-item, .region-item, .video-item { display: flex; align-items: center; gap: 12px; }
+.demo-item { flex-direction: column; align-items: stretch; gap: 8px; }
+.demo-label, .region-label { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--text-color); }
+.progress-bar { background-color: #e2e8f0; border-radius: 100px; height: 8px; overflow: hidden; }
+.progress-fill { background-color: #3b82f6; height: 100%; border-radius: 100px; transition: width 0.3s; }
+.insights { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.insight { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-light); }
+
+.video-item { padding: 12px; border-radius: 8px; transition: background-color 0.2s; }
+.video-item:hover { background-color: #f1f5f9; }
+.video-thumbnail { width: 40px; height: 40px; background-color: #cbd5e1; border-radius: 4px; display: flex; justify-content: center; align-items: center; font-weight: 700; color: #64748b; flex-shrink: 0; }
+.video-details { flex: 1; }
+.video-details h4 { font-size: 16px; font-weight: 600; color: var(--text-color); margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.video-stats { font-size: 12px; color: var(--text-light); display: flex; flex-wrap: wrap; gap: 8px; }
+.video-rank { font-size: 20px; font-weight: 700; color: #d1d5db; margin-left: auto; }
+
+/* Responsive */
+=======
 .container {
   max-width:1280px;
   margin: 0 auto;
@@ -564,6 +647,7 @@ body {
 }
 
 /* Responsive Adjustments */
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
 @media (max-width:768px) {
     body { padding:0; }
     .main-container, .chat-page .main-container { height:100vh; max-height:100vh; border-radius:0; }
@@ -574,6 +658,19 @@ body {
     .channel-header { flex-direction: column; text-align: center; }
     .channel-stats { justify-content: center; }
     .tabs-list { flex-wrap: wrap; justify-content: center; }
+<<<<<<< HEAD
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .metric-card { padding: 16px; }
+    .metric-value { font-size: 28px; }
+    .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+    .metrics-grid { grid-template-columns: 1fr; }
+    .metric-value { font-size: 24px; }
+    .search-box { flex-direction: column; }
+    .search-input { text-align: center; margin-bottom: 10px; }
+    .send-button { width: 100%; margin-top: 10px;}
+=======
 }
 
 @media (max-width: 768px) {
@@ -607,14 +704,18 @@ body {
   .search-box { flex-direction: column; }
   .search-input { text-align: center; margin-bottom: 10px; }
   .send-button { width: 100%; margin-top: 10px;}
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
 }
 </style>
 </head>
 <body>
 
+<<<<<<< HEAD
+=======
     <!-- Removed theme toggle button -->
 
     <!-- Chat Page -->
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
     <div class="chat-page" id="chatPage">
       <div class="main-container">
         <header class="header">
@@ -622,7 +723,10 @@ body {
             <img src="assets/WhatsApp Image 2025-09-12 at 17.41.23.jpeg" alt="VidWise" class="logo-image">
             <h1></h1>
           </div>
+<<<<<<< HEAD
+=======
           <div style="text-align: center; margin-top: 20px; font-size: 24px; font-weight: 600;"></div>
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
         </header>
 
         <div id="chat-container"></div>
@@ -630,7 +734,11 @@ body {
         <div class="search-container">
           <div class="search-box">
             <span class="plus-icon">+</span>
+<<<<<<< HEAD
+            <input type="text" id="chatInput" class="search-input" placeholder="Pergunte alguma coisa sobre as métricas do canal...">
+=======
             <input type="text" id="chatInput" class="search-input" placeholder="Pergunte alguma coisa">
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
             <button class="send-button" onclick="sendChatMessage()">➤</button>
           </div>
         </div>
@@ -639,10 +747,17 @@ body {
           <div style="display: flex; gap: 8px; align-items: stretch;">
             <input type="text" id="youtubeUrlInput" class="search-input" placeholder="Insira o link do seu canal aqui..." style="flex: 1; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
             <button class="yt-button" onclick="goToDashboard()">BUSCAR</button>
+<<<<<<< HEAD
+            <button class="yt-button" style="background: #ef4444;" onclick="limparUrlSalva()">LIMPAR</button>
+          </div>
+        </div>
+
+=======
           </div>
         </div>
 
         <!-- Result Card -->
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
         <div id="resultCard">
           <div class="result-card">
             <img id="resultAvatar" src="https://placeholder.svg?height=64&width=64&query=channel" alt="Canal">
@@ -656,7 +771,10 @@ body {
       </div>
     </div>
 
+<<<<<<< HEAD
+=======
     <!-- Dashboard Page -->
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
     <div class="dashboard-page" id="dashboardPage">
       <header class="header">
         <div class="header-content">
@@ -675,16 +793,27 @@ body {
       </header>
 
       <main class="container">
+<<<<<<< HEAD
+        <div class="card channel-info">
+          <div class="channel-header">
+            <div class="avatar"><img id="channelAvatar" src="https://placeholder.svg?height=80&width=80&query=channel-avatar" alt="Canal" /></div>
+=======
         <!-- Updated channel info card to display dynamic data from API -->
         <div class="card channel-info">
           <div class="channel-header">
             <div class="avatar">
               <img id="channelAvatar" src="https://placeholder.svg?height=80&width=80&query=channel-avatar" alt="Canal" />
             </div>
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
             <div class="channel-details">
               <h2 class="channel-name" id="dashChannelName">Seu Canal</h2>
               <p class="channel-description" id="dashChannelDesc">Descrição não disponível</p>
               <div class="channel-stats">
+<<<<<<< HEAD
+                <div class="stat"><span id="dashStatSubs">0 inscritos</span></div>
+                <div class="stat"><span id="dashStatViews">0 visualizações</span></div>
+                <div class="stat"><span class="stat-icon">▶</span><span id="dashStatVideos">0 vídeos</span></div>
+=======
                 <div class="stat">
                   <span id="dashStatSubs">0 inscritos</span>
                 </div>
@@ -695,38 +824,54 @@ body {
                   <span class="stat-icon">▶</span>
                   <span id="dashStatVideos">0 vídeos</span>
                 </div>
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
               </div>
             </div>
             <div class="status-badge">Ativo</div>
           </div>
         </div>
 
+<<<<<<< HEAD
+=======
         <!-- Updated metrics grid to show only 5 cards -->
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
         <div class="metrics-grid">
           <div class="card metric-card">
             <div class="metric-title">Quantidade de Vídeos</div>
             <div class="metric-value" id="dashMetric-videos">0</div>
             <p class="metric-description">Videos publicados</p>
           </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
           <div class="card metric-card">
             <div class="metric-title">Total de Views</div>
             <div class="metric-value" id="dashMetric-views">0</div>
             <p class="metric-description">Visualizações totais</p>
           </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
           <div class="card metric-card">
             <div class="metric-title">Inscritos</div>
             <div class="metric-value" id="dashMetric-subs">0</div>
             <p class="metric-description">Subscribers</p>
           </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
           <div class="card metric-card">
             <div class="metric-title">Tempo Médio</div>
             <div class="metric-value" id="dashMetric-avgTime">0</div>
             <p class="metric-description">Tempo médio de assista</p>
           </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
           <div class="card metric-card">
             <div class="metric-title">Duração Média</div>
             <div class="metric-value" id="dashMetric-avgDuration">0</div>
@@ -734,6 +879,12 @@ body {
           </div>
         </div>
 
+<<<<<<< HEAD
+        <div class="tabs-container">
+          <div class="tabs-list">
+            <button class="tab-trigger active" data-tab="overview">Visão Geral</button>
+            <button class="tab-trigger" data-tab="content">Conteúdo</button>
+=======
         <!-- Tabs Section -->
         <div class="tabs-container">
           <div class="tabs-list">
@@ -741,6 +892,7 @@ body {
             <button class="tab-trigger" data-tab="audience">Audiência</button>
             <button class="tab-trigger" data-tab="content">Conteúdo</button>
             <button class="tab-trigger" data-tab="geography">Geografia</button>
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
           </div>
 
           <div id="overview" class="tab-content active">
@@ -750,16 +902,24 @@ body {
                   <h3>Crescimento Mensal</h3>
                   <p>Visualizações e inscritos nos últimos 6 meses</p>
                 </div>
+<<<<<<< HEAD
+                <div class="chart-container"><canvas id="growthChart"></canvas></div>
+              </div>
+=======
                 <div class="chart-container">
                   <canvas id="growthChart"></canvas>
                 </div>
               </div>
 
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
               <div class="card">
                 <div class="card-header">
                   <h3>Horários de Pico</h3>
                   <p>Engajamento por horário do dia</p>
                 </div>
+<<<<<<< HEAD
+                <div class="chart-container"><canvas id="peakHoursChart"></canvas></div>
+=======
                 <div class="chart-container">
                   <canvas id="peakHoursChart"></canvas>
                 </div>
@@ -808,6 +968,7 @@ body {
                     </div>
                   </div>
                 </div>
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
               </div>
             </div>
           </div>
@@ -821,6 +982,8 @@ body {
               <div class="videos-list" id="dashVideosList"></div>
             </div>
           </div>
+<<<<<<< HEAD
+=======
 
           <div id="geography" class="tab-content">
             <div class="card">
@@ -892,11 +1055,85 @@ body {
               </div>
             </div>
           </div>
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
         </div>
       </main>
     </div>
 
     <script>
+<<<<<<< HEAD
+      const API_YOUTUBE  = "http://localhost:3001/youtube";
+      const API_PERGUNTA = "http://localhost:3001/pergunta";
+      
+      const chatInput       = document.getElementById('chatInput');
+      const youtubeUrlInput = document.getElementById('youtubeUrlInput');
+      const resultCard      = document.getElementById('resultCard');
+      const chatPage        = document.getElementById('chatPage');
+      const dashboardPage   = document.getElementById('dashboardPage');
+      
+      let currentChartInstances = {};
+      let currentChannelData    = {};
+      
+      // NOVA VARIÁVEL GLOBAL PARA A MEMÓRIA DA URL
+      let currentLink = "";
+
+      // 1. CARREGAMENTO INICIAL: Busca a URL salva na memória do navegador
+      window.addEventListener('DOMContentLoaded', () => {
+          const urlSalva = localStorage.getItem('canalUrl_vidwise');
+          if (urlSalva) {
+              currentLink = urlSalva;
+              youtubeUrlInput.value = urlSalva;
+              adicionarMensagem("Canal recuperado da memória: " + urlSalva + ". Você já pode analisar ou fazer perguntas!", "msg-ia");
+          } else {
+              adicionarMensagem("Olá! Insira a URL do canal abaixo para buscar os dados. Depois, me faça uma pergunta!", "msg-ia");
+          }
+      });
+      
+      // 2. FUNÇÃO BUSCAR (Salva na memória antes de raspagem)
+      function goToDashboard() {
+        const url = youtubeUrlInput.value.trim();
+        if (!url) { alert('Por favor, cole uma URL do canal YouTube.'); return; }
+        
+        currentLink = url; 
+        localStorage.setItem('canalUrl_vidwise', url); // Salva na memória do navegador
+        
+        fetchChannelInfo(url);
+      }
+
+      // 3. FUNÇÃO LIMPAR (Apaga a memória do navegador)
+      function limparUrlSalva() {
+          localStorage.removeItem('canalUrl_vidwise');
+          currentLink = "";
+          youtubeUrlInput.value = "";
+          document.getElementById('searchInput').value = ""; // Limpa a barra do dashboard
+          alert("Canal limpo. A IA não utilizará mais este contexto.");
+      }
+      
+      async function fetchChannelInfo(url) {
+        try {
+          adicionarMensagem("Buscando dados no YouTube... Aguarde.", "msg-ia");
+          const resp = await fetch(API_YOUTUBE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+          });
+          const data = await resp.json();
+          if (!data.ok) throw new Error(data.erro || 'Resposta inválida');
+      
+          const ch = data.channel || {};
+          currentChannelData = data;
+      
+          document.getElementById('resultChannelName').innerText = ch.title || 'Canal';
+          document.getElementById('resultChannelUrl').innerText   = url;
+          if (ch.avatarUrl) document.getElementById('resultAvatar').src = ch.avatarUrl;
+      
+          resultCard.classList.add('show');
+          resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          adicionarMensagem(`Sucesso! Canal '${ch.title}' salvo no banco de dados. Agora você pode me fazer perguntas sobre ele!`, "msg-ia");
+      
+        } catch (err) {
+          alert('Erro ao buscar canal: ' + (err.message || err));
+=======
       const API_YOUTUBE = "http://localhost:3001/youtube";
       const API_PERGUNTA = "http://localhost:3001/pergunta";
       const chatInput = document.getElementById('chatInput');
@@ -914,8 +1151,41 @@ body {
         if (!url) {
           alert('Por favor, cole uma URL do canal YouTube.');
           return;
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
         }
+      }
+      
+      function analyzeFromResult() {
+        if (!currentChannelData || !currentChannelData.channel) {
+          alert('Erro: dados do canal não disponíveis.');
+          return;
+        }
+        chatPage.classList.add('hidden');
+        dashboardPage.classList.add('active');
+        populateDashboard(currentChannelData);
+        destroyCharts();
+        setTimeout(() => initializeCharts(), 100);
+      }
+      
+      function backToChat() {
+        dashboardPage.classList.remove('active');
+        chatPage.classList.remove('hidden');
+        resultCard.classList.remove('show');
+        destroyCharts();
+      }
+      
+      // 4. FUNÇÃO DO CHAT (Envia a pergunta + a URL persistida no banco)
+      function sendChatMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
         
+<<<<<<< HEAD
+        // Verifica se existe URL salva no momento
+        const urlParaPesquisa = localStorage.getItem('canalUrl_vidwise') || "";
+
+        const container = document.getElementById('chat-container');
+        
+=======
         fetchChannelInfo(url);
       }
 
@@ -1240,11 +1510,15 @@ body {
         if (!message) return;
         
         const container = document.getElementById('chat-container');
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
         const userMsg = document.createElement('div');
         userMsg.className = 'message user-message message-enter';
         userMsg.innerText = message;
         container.appendChild(userMsg);
+<<<<<<< HEAD
+=======
         
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
         chatInput.value = '';
         container.scrollTop = container.scrollHeight;
         
@@ -1254,6 +1528,58 @@ body {
           typingDiv.innerHTML = '<span></span><span></span><span></span>';
           container.appendChild(typingDiv);
           container.scrollTop = container.scrollHeight;
+<<<<<<< HEAD
+      
+          try {
+            let response;
+
+            if (urlParaPesquisa) {
+                // OPÇÃO 2: TEM LINK! Vai para a rota do fluxo de cima.
+                console.log("📡 Enviando para /chat-com-link com link:", urlParaPesquisa);
+                response = await fetch('/chat-com-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        pergunta: message, 
+                        link: urlParaPesquisa 
+                    })
+                });
+            } else {
+                // OPÇÃO 1: SEM LINK! Chat genérico (fluxo de baixo).
+                console.log("📡 Enviando para /pergunta (Chat Genérico)");
+                response = await fetch('/pergunta', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        pergunta: message 
+                    })
+                });
+            }
+
+            typingDiv.remove();
+
+            const data = await response.json();
+            const aiContent = data.ok
+                ? (data.resposta?.answer || JSON.stringify(data.resposta))
+                : `❌ Erro: ${data.erro || 'Resposta inválida'}`;
+
+            adicionarMensagem(aiContent, "msg-ia");
+        } catch (err) {
+            typingDiv.remove();
+            adicionarMensagem('Desculpe, houve um erro ao conectar com a IA.', "msg-ia");
+        }
+        }, 300);
+      }
+      
+      function adicionarMensagem(texto, classe) {
+          const container = document.getElementById('chat-container');
+          const msg = document.createElement('div');
+          msg.className = `message ${classe} message-enter`;
+          msg.innerText = texto;
+          container.appendChild(msg);
+          container.scrollTop = container.scrollHeight;
+      }
+=======
           
           try {
             const response = await fetch(API_PERGUNTA, {
@@ -1290,11 +1616,16 @@ body {
           }
         }, 300);
       }
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
 
       chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendChatMessage();
       });
+<<<<<<< HEAD
+      
+=======
 
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
       document.querySelectorAll('.tab-trigger').forEach(tab => {
         tab.addEventListener('click', () => {
           const tabName = tab.getAttribute('data-tab');
@@ -1304,6 +1635,214 @@ body {
           document.getElementById(tabName).classList.add('active');
         });
       });
+<<<<<<< HEAD
+      
+      // Funções de dashboard (Renderização e Gráficos)
+      function populateDashboard(data) {
+        const ch     = data.channel || {};
+        const videos = data.videos  || [];
+        
+        document.getElementById('dashChannelName').innerText  = ch.title || 'Canal';
+        document.getElementById('dashChannelDesc').innerText  = ch.description || 'Descrição não disponível';
+        document.getElementById('dashStatSubs').innerText     = formatNumber(ch.subscribers || 0) + ' inscritos';
+        document.getElementById('dashStatViews').innerText    = formatNumber(ch.channelTotalViews || 0) + ' visualizações';
+        document.getElementById('dashStatVideos').innerText   = (ch.channelTotalVideos || videos.length) + ' vídeos';
+        
+        if (ch.avatarUrl) document.getElementById('channelAvatar').src = ch.avatarUrl;
+        
+        const durations   = videos.map(v => parseDuration(v.duration));
+        const avgDuration = durations.length
+          ? durations.reduce((a, b) => a + b, 0) / durations.length
+          : 0;
+        
+        document.getElementById('dashMetric-videos').innerText      = ch.channelTotalVideos || videos.length;
+        document.getElementById('dashMetric-views').innerText       = formatNumber(ch.channelTotalViews || 0);
+        document.getElementById('dashMetric-subs').innerText        = formatNumber(ch.subscribers || 0);
+        document.getElementById('dashMetric-avgTime').innerText     = avgDuration.toFixed(1) + ' min';
+        document.getElementById('dashMetric-avgDuration').innerText = avgDuration.toFixed(1) + ' min';
+        
+        monthlyGrowthData = generateMonthlyGrowthData(videos, ch);
+        
+        let videosHtml = '';
+        const topVideos = [...videos]
+          .sort((a, b) => Number(b.viewCount || 0) - Number(a.viewCount || 0))
+          .slice(0, 10);
+        
+        topVideos.forEach((v, idx) => {
+          videosHtml += `
+            <div class="video-item">
+              <div class="video-thumbnail">▶</div>
+              <div class="video-details">
+                <h4>${escapeHtml(v.title)}</h4>
+                <div class="video-stats">
+                  <span>${formatNumber(Number(v.viewCount || 0))} views</span>
+                  <span>${v.duration || '-'} duração</span>
+                  <span>${v.date || '-'}</span>
+                </div>
+              </div>
+              <div class="video-rank">#${idx + 1}</div>
+            </div>`;
+        });
+        document.getElementById('dashVideosList').innerHTML = videosHtml;
+      }
+      
+      function generateMonthlyGrowthData(videos, channelInfo) {
+        const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+        const viewsData = [];
+        const subsData  = [];
+        for (let i = 0; i < months.length; i++) {
+          const monthVideos = videos.filter(v => {
+            if (!v.date) return false;
+            const videoMonth   = new Date(v.date).getMonth();
+            const monthOffset  = new Date().getMonth() - i;
+            return videoMonth === ((12 + monthOffset) % 12);
+          });
+          if (monthVideos.length > 0) {
+            const monthViews = monthVideos.reduce((sum, v) => sum + (Number(v.viewCount) || 0), 0);
+            viewsData.push(Math.round(monthViews / monthVideos.length));
+          } else {
+            viewsData.push(0);
+          }
+          subsData.push(Math.round((channelInfo.subscribers || 0) / months.length * (i + 1)));
+        }
+        return { labels: months, views: viewsData, subs: subsData };
+      }
+      
+      function triggerAnalyzeUrl() {
+        const url = document.getElementById('searchInput').value.trim();
+        if (!url) { alert('Por favor, cole uma URL do canal YouTube.'); return; }
+        
+        localStorage.setItem('canalUrl_vidwise', url);
+        currentLink = url;
+        youtubeUrlInput.value = url;
+
+        analyzeYoutube(url);
+      }
+      
+      async function analyzeYoutube(url) {
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<span class="spinner"></span>';
+        try {
+          const resp = await fetch(API_YOUTUBE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+          });
+          const data = await resp.json();
+          if (!data.ok) throw new Error(data.erro || 'Resposta inválida');
+          currentChannelData = data;
+          populateDashboard(data);
+          destroyCharts();
+          setTimeout(() => initializeCharts(), 100);
+        } catch (err) {
+          alert('Erro ao processar canal: ' + (err.message || err));
+        } finally {
+          analyzeBtn.disabled = false;
+          analyzeBtn.innerHTML = 'Analisar';
+        }
+      }
+      
+      function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000)    return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+      }
+      
+      function parseDuration(d) {
+        if (!d) return 0;
+        const p = d.split(':').map(v => parseInt(v, 10));
+        if (p.length === 2) return p[0] + p[1] / 60;
+        if (p.length === 3) return p[0] * 60 + p[1] + p[2] / 60;
+        return 0;
+      }
+      
+      function escapeHtml(text) {
+        if (!text) return '';
+        return text.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+      }
+      
+      function destroyCharts() {
+        Object.values(currentChartInstances).forEach(c => { if (c) c.destroy(); });
+        currentChartInstances = {};
+      }
+      
+      function getChartColors() {
+        return {
+          textColor: '#64748b', borderColor: '#e2e8f0',
+          primaryGradientStart: '#2563eb', primaryGradientEnd: '#3b82f6',
+          secondaryGradientStart: '#64748b', secondaryGradientEnd: '#94a3b8',
+          backgroundAlpha: 'rgba(37,99,235,0.1)',
+        };
+      }
+      
+      function createGradient(ctx, colorStart, colorEnd) {
+        const g = ctx.createLinearGradient(0, 0, 0, 300);
+        g.addColorStop(0, colorStart);
+        g.addColorStop(1, colorEnd);
+        return g;
+      }
+      
+      function initializeCharts() {
+        const colors = getChartColors();
+        Chart.defaults.color       = colors.textColor;
+        Chart.defaults.borderColor = colors.borderColor;
+        
+        const growthData = monthlyGrowthData || {
+          labels: ['Jan','Fev','Mar','Abr','Mai','Jun'],
+          views: [45000,52000,48000,61000,55000,67000],
+          subs:  [1200,1800,1500,2200,1900,2800]
+        };
+        
+        const ctxGrowth = document.getElementById('growthChart')?.getContext('2d');
+        if (ctxGrowth) {
+          currentChartInstances.growth = new Chart(ctxGrowth, {
+            type: 'bar',
+            data: {
+              labels: growthData.labels,
+              datasets: [
+                { label: 'Visualizações', data: growthData.views,
+                  backgroundColor: createGradient(ctxGrowth, colors.primaryGradientStart, colors.primaryGradientEnd),
+                  borderRadius: 8, borderWidth: 0 },
+                { label: 'Inscritos', data: growthData.subs,
+                  backgroundColor: createGradient(ctxGrowth, colors.secondaryGradientStart, colors.secondaryGradientEnd),
+                  borderRadius: 8, borderWidth: 0 }
+              ]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { position: 'top', labels: { padding: 15, font: { size: 13, weight: '600' } } } },
+              scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+            }
+          });
+        }
+        
+        const ctxPeak = document.getElementById('peakHoursChart')?.getContext('2d');
+        if (ctxPeak) {
+          currentChartInstances.peakHours = new Chart(ctxPeak, {
+            type: 'line',
+            data: {
+              labels: ['06:00','09:00','12:00','15:00','18:00','21:00','00:00'],
+              datasets: [{
+                label: 'Engajamento (%)',
+                data: [15,35,60,45,85,95,25],
+                borderColor: colors.primaryGradientStart,
+                backgroundColor: colors.backgroundAlpha,
+                borderWidth: 3, fill: true, tension: 0.4,
+                pointBackgroundColor: colors.primaryGradientStart,
+                pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5
+              }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { position: 'top' } },
+              scales: { y: { beginAtZero: true, max: 100 } }
+            }
+          });
+        }
+      }
+=======
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
     </script>
 </body>
 </html>

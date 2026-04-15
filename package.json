@@ -12,11 +12,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
+    "apify": "^3.7.0",
+    "axios": "^1.14.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "pg": "^8.20.0"
+=======
     "apify": "^3.5.2",
     "axios": "^1.12.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0"
+>>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

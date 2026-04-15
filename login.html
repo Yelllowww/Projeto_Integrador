@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VidWise</title>
+    <link rel="stylesheet" href="cadastro.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .alert-box {
+            background-color: #f8d7da; /* Fundo vermelho clarinho */
+            color: #721c24; /* Texto vermelho escuro */
+            border: 1px solid #f5c6cb; /* Bordinha combinando */
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none; /* Começa escondido */
+            animation: fadeIn 0.4s ease-in-out; /* Animação suave */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        
+        <div class="logo-area">
+            <img src="WhatsApp Image 2025-09-12 at 17.41.23.jpeg" alt="VidWise Logo" class="main-logo borda-preta">
+        </div>
+
+        <h3>Faça login na sua conta</h3>
+        
+        <button class="google-btn">
+            <img src="https://www.google.com/favicon.ico" alt="Google Icon" width="16"> Entrar com Google
+        </button>
+
+        <p class="divider">ou</p>
+
+        <form id="loginForm" action="/login" method="POST">
+            <input type="email" id="email" name="email" placeholder="Seu e-mail" required>
+            <input type="password" id="password" name="senha" placeholder="Sua senha" required>
+            
+            <div style="text-align: right; margin-top: -5px; margin-bottom: 10px;">
+                <a href="#" style="font-size: 13px; color: #1a73e8; text-decoration: none; font-weight: 500;">Esqueceu a senha?</a>
+            </div>
+
+            <div id="mensagemErro" class="alert-box">
+                <strong>Acesso Negado:</strong> E-mail ou senha incorretos!
+            </div>
+
+            <button type="submit" class="btn-cadastrar">ENTRAR</button>
+        </form>
+
+        <p class="footer-text">Não tem uma conta? <a href="cadastro.html">Cadastre-se</a></p>
+    </div>
+
+    <script>
+        // O JavaScript olha para a barra de endereços do navegador
+        const parametros = new URLSearchParams(window.location.search);
+        
+        // Se ele encontrar a palavra "erro"
+        if (parametros.has('erro')) {
+            // Ele muda o display da caixa de 'none' para 'block' (aparecer)
+            document.getElementById('mensagemErro').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
