@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - VidWise</title>
+    <link rel="stylesheet" href="cadastro.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="register-container">
+        
+        <div class="logo-area">
+            <img src="WhatsApp Image 2025-09-12 at 17.41.23.jpeg" alt="VidWise Logo" class="main-logo borda-spreta">
+        </div>
+
+        <h3>Crie sua conta</h3>
+        
+        <button class="google-btn">
+            <img src="https://www.google.com/favicon.ico" alt="Google Icon" width="16"> Cadastrar com Google
+        </button>
+
+        <p class="divider">ou</p>
+
+        <form id="registerForm" action="/cadastrar" method="POST">
+            <input type="text" name="nome" placeholder="Seu nome" required>
+            <input type="email" id="email" name="email" placeholder="Seu e-mail" required>
+            <input type="password" id="password" name="senha" placeholder="Crie uma senha" required>
+            
+            <button type="submit" class="btn-cadastrar">CADASTRAR</button>
+        </form>
+
+        <p class="footer-text">Já tem uma conta? <a href="login.html">Faça login</a></p>
+    </div>
+
+    <script src="cadastro.js"></script>
+</body>
+</html>
