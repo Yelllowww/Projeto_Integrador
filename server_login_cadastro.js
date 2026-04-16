@@ -13,11 +13,11 @@ app.use(express.static(__dirname)); // Permite ler o login.html e teste.html da 
 
 // Configuração do "Cofre" (PostgreSQL)
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres', 
-    password: 'miguelaraujosd', // Sua senha real
-    port: 5433, // A sua porta do DBeaver
+    user: 'casaos',
+    host: 'casaos',
+    database: 'VidWiseDB', 
+    password: 'casaos', // Sua senha real
+    port: 5432, // A sua porta do DBeaver
 });
 
 // --- ROTA DE CADASTRO ---
@@ -30,7 +30,7 @@ app.post('/cadastrar', async (req, res) => {
         
         // Salva no banco de dados
         await pool.query(
-            'INSERT INTO usuarios (nome_usuario, email_usuario, senha_usuario) VALUES ($1, $2, $3)', 
+            'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3)', 
             [nome, email, senhaHash] 
         );
         res.send("Cadastrado com sucesso! Volte para a página de login e tente entrar.");
@@ -45,7 +45,7 @@ app.post('/login', async (req, res) => {
 
     try {
         // Busca o usuário no banco pelo e-mail
-        const resultado = await pool.query('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
+        const resultado = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
         
         // Se a lista voltar vazia, o e-mail não existe
         if (resultado.rows.length === 0) {
@@ -56,7 +56,7 @@ app.post('/login', async (req, res) => {
         const usuario = resultado.rows[0];
         
         // Compara a senha digitada com a "carne moída" do banco
-        const senhaCorreta = await bcrypt.compare(senha, usuario.senha_usuario);
+        const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
         if (senhaCorreta) {
             // Se bater, manda o usuário para a área restrita

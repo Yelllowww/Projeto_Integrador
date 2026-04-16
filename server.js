@@ -10,11 +10,11 @@ const path = require('path');
 const session = require('express-session'); // BIBLIOTECA DE SEGURANÇA
 
 const { ApifyClient } = require("apify"); // adicionado Apify
+const { link } = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-<<<<<<< HEAD
 // ---------------------------------------------------------
 // 1. CONFIGURAÇÕES BÁSICAS
 // ---------------------------------------------------------
@@ -50,6 +50,12 @@ app.use((req, res, next) => {
     next(); 
 });
 
+const checkAuth = (req, res, next) => {
+    if (!req.session.logado || !req.session.usuario_id) {
+        return res.status(401).json({ ok: false, erro: "Você não está autenticado. Faça login primeiro." });
+    }
+    next();
+};
 // ---------------------------------------------------------
 // 4. CONFIGURAÇÃO DO COFRE (POSTGRESQL)
 // ---------------------------------------------------------
@@ -59,7 +65,7 @@ const pool = new Pool({
     database: 'postgres', 
     // Usando a variável de ambiente, mas com fallback para a senha antiga caso você não tenha criado o .env ainda
     password: process.env.DB_SENHA || 'miguelaraujosd', 
-    port: 5433,
+    port: 5432,
 });
 
 // ---------------------------------------------------------
@@ -70,7 +76,7 @@ app.post('/cadastrar', async (req, res) => {
     try {
         const senhaHash = await bcrypt.hash(senha, 10);
         await pool.query(
-            'INSERT INTO usuarios (nome_usuario, email_usuario, senha_usuario) VALUES ($1, $2, $3)', 
+            'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3)', 
             [nome, email, senhaHash] 
         );
         res.send("Cadastrado com sucesso! Volte para a página de login.");
@@ -82,14 +88,15 @@ app.post('/cadastrar', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { email, senha } = req.body; 
     try {
-        const resultado = await pool.query('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
+        const resultado = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
         if (resultado.rows.length === 0) return res.redirect('/login.html?erro=1'); 
 
         const usuario = resultado.rows[0];
-        const senhaCorreta = await bcrypt.compare(senha, usuario.senha_usuario);
+        const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
         if (senhaCorreta) {
             req.session.logado = true; // Cria a sessão VIP
+            res.session.usuario_id = usuario.id;
             res.redirect('/index.html'); 
         } else {
             res.redirect('/login.html?erro=1');
@@ -99,149 +106,218 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/conversa/criar', checkAuth, async (req, res) => {
+    const { titulo } = req.body;
+    const usuario_id = req.session.usuario_id;
+
+    try {
+        // Se não passou título, gera um padrão
+        const tituloConversa = titulo || `Conversa de ${new Date().toLocaleDateString('pt-BR')}`;
+
+        // Insere a conversa na tabela
+        const resultado = await pool.query(
+            'INSERT INTO conversas (usuario_id, titulo, criacao) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING id, titulo, criacao',
+            [usuario_id, tituloConversa]
+        );
+
+        const conversa = resultado.rows[0];
+        res.json({ 
+            ok: true, 
+            conversa_id: conversa.id, 
+            titulo: conversa.titulo,
+            mensagem: "Conversa criada com sucesso!" 
+        });
+    } catch (err) {
+        console.error("Erro ao criar conversa:", err.message);
+        res.status(500).json({ ok: false, erro: err.message });
+    }
+});
+
+// Salvar uma mensagem em uma conversa
+app.post('/conversa/:conversa_id/mensagem', checkAuth, async (req, res) => {
+    const conversa_id = req.params.conversa_id;
+    const { pergunta, resposta, tokens } = req.body;
+    const usuario_id = req.session.usuario_id;
+
+    try {
+        // Verifica se a conversa pertence ao usuário
+        const verificaConversa = await pool.query(
+            'SELECT id FROM conversas WHERE id = $1 AND usuario_id = $2',
+            [conversa_id, usuario_id]
+        );
+
+        if (verificaConversa.rows.length === 0) {
+            return res.status(403).json({ ok: false, erro: "Você não tem acesso a esta conversa." });
+        }
+
+        // Cria um objeto JSONB com pergunta + resposta
+        const dados_conversa = {
+            pergunta: pergunta,
+            resposta: resposta,
+            timestamp: new Date().toISOString()
+        };
+
+        // Insere a mensagem
+        await pool.query(
+            'INSERT INTO mensagens (conversa_id, dados_conversa, tokens, criacao) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)',
+            [conversa_id, JSON.stringify(dados_conversa), tokens || 0]
+        );
+
+        res.json({ ok: true, mensagem: "Mensagem salva com sucesso!" });
+    } catch (err) {
+        console.error("❌ Erro ao salvar mensagem:", err.message);
+        res.status(500).json({ ok: false, erro: err.message });
+    }
+});
+// Listar todas as conversas do usuário
+app.get('/conversa/listar', checkAuth, async (req, res) => {
+    const usuario_id = req.session.usuario_id;
+
+    try {
+        // Busca todas as conversas do usuário, ordenadas por mais recentes
+        const resultado = await pool.query(
+            'SELECT id, titulo, criacao FROM conversas WHERE usuario_id = $1 ORDER BY criacao DESC',
+            [usuario_id]
+        );
+
+        res.json({ 
+            ok: true, 
+            total: resultado.rows.length,
+            conversas: resultado.rows 
+        });
+    } catch (err) {
+        console.error("❌ Erro ao listar conversas:", err.message);
+        res.status(500).json({ ok: false, erro: err.message });
+    }
+});
+// Recuperar todas as mensagens de uma conversa
+app.get('/conversa/:conversa_id/mensagens', checkAuth, async (req, res) => {
+    const conversa_id = req.params.conversa_id;
+    const usuario_id = req.session.usuario_id;
+
+    try {
+        // Verifica se a conversa pertence ao usuário
+        const verificaConversa = await pool.query(
+            'SELECT id FROM conversas WHERE id = $1 AND usuario_id = $2',
+            [conversa_id, usuario_id]
+        );
+
+        if (verificaConversa.rows.length === 0) {
+            return res.status(403).json({ ok: false, erro: "Você não tem acesso a esta conversa." });
+        }
+
+        // Busca todas as mensagens da conversa
+        const resultado = await pool.query(
+            'SELECT id, dados_conversa, tokens, criacao FROM mensagens WHERE conversa_id = $1 ORDER BY criacao ASC',
+            [conversa_id]
+        );
+
+        res.json({ 
+            ok: true,
+            total: resultado.rows.length,
+            mensagens: resultado.rows 
+        });
+    } catch (err) {
+        console.error("❌ Erro ao recuperar mensagens:", err.message);
+        res.status(500).json({ ok: false, erro: err.message });
+    }
+});
+
 // ---------------------------------------------------------
 // 6. ROTAS DE IA (DIFY) - SEPARADAS CONFORME A ARQUITETURA
 // ---------------------------------------------------------
 
 // OPÇÃO 1 (FLUXO DE BAIXO): Sem link, apenas conversa normal
-app.post("/pergunta", async (req, res) => {
+app.post("/pergunta", checkAuth, async (req, res) => {
   try {
-    const { pergunta } = req.body; 
+    const { pergunta, conversa_id } = req.body;
+    const usuario_id = req.session.usuario_id;
     if (!pergunta) return res.status(400).json({ ok: false, erro: "Campo 'pergunta' é obrigatório" });
-=======
-// rota raiz
-app.get("/", (req, res) => {
-  res.send("🚀 Backend Dify + Apify rodando!");
-});
+    let finalConversa_id = conversa_id;
+    if (!conversa_id) {
+        const novaConversa = await pool.query(
+            'INSERT INTO conversas (usuario_id, titulo, criacao) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING id',
+            [usuario_id, `Conversa de ${new Date().toLocaleDateString('pt-BR')}`]
+        );
+        finalConversa_id = novaConversa.rows[0].id;
+    }
 
-// rota de teste Dify
-app.get("/teste-dify", async (req, res) => {
-  try {
-    const resp = await axios.post(
-      "https://api.dify.ai/v1/chat-messages",
-      {
-        inputs: {},
-        query: "Diga olá em português",
-        response_mode: "blocking",
-        user: "teste123"
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.DIFY_API_KEY}`,
-          "Content-Type": "application/json"
-        }
-      }
+    // Verifica se a conversa pertence ao usuário
+    const verificaConversa = await pool.query(
+        'SELECT id FROM conversas WHERE id = $1 AND usuario_id = $2',
+        [finalConversa_id, usuario_id]
     );
-    res.json({ ok: true, resposta: resp.data });
-  } catch (err) {
-    console.error("❌ Erro no teste:", err?.response?.data || err.message);
-    res.status(500).json({ ok: false, erro: err?.response?.data || err.message });
-  }
-});
-
-// rota /pergunta (Dify) - igual ao que você tinha
-app.post("/pergunta", async (req, res) => {
-  try {
-    const { pergunta, dados } = req.body;
-    if (!pergunta) return res.status(400).json({ ok:false, erro: "Campo 'pergunta' é obrigatório" });
->>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
-
+    if (verificaConversa.rows.length === 0) {
+        return res.status(403).json({ ok: false, erro: "Conversa inválida." });
+    }
     const payload = { 
         inputs: {}, // Sem variáveis extras, fluxo genérico
         query: pergunta, 
         response_mode: "blocking", 
-        user: "usuario-vidwise" 
+        user: 'usuario-${usuario_id}' 
     };
 
     console.log("🚀 Enviando para /pergunta (Chat Genérico)");
 
     const difyResp = await axios.post(
-<<<<<<< HEAD
         "https://api.dify.ai/v1/chat-messages", 
         payload, 
         { headers: { Authorization: `Bearer ${process.env.DIFY_API_KEY}`, "Content-Type": "application/json" } }
-=======
-      "https://api.dify.ai/v1/chat-messages",
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.DIFY_API_KEY}`,
-          "Content-Type": "application/json"
-        }
-      }
->>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
+    );
+    const resposta = difyResp.data;
+    const tokens = difyResp.data?.usage?.total_tokens || 0; // Extrair tokens usados
+
+    //SALVA PERGUNTA + RESPOSTA NO BANCO
+    const dados = {
+        pergunta: pergunta,
+        resposta: resposta,
+        link_analisado: link,
+        timestamp: new Date().toISOString()
+    };
+
+    await pool.query(
+        'INSERT INTO mensagens (conversa_id, dados_conversa, tokens, criacao) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)',
+        [finalConversa_id, JSON.stringify(dados), tokens]
     );
 
-    res.json({ ok: true, resposta: difyResp.data });
+    res.json({ 
+        ok: true, 
+        resposta: resposta,
+        conversa_id: finalConversa_id
+    });
   } catch (err) {
-<<<<<<< HEAD
     const erroDify = err?.response?.data || err.message;
     console.error("🚨 ERRO DIFY (/pergunta):", erroDify);
     res.status(500).json({ ok: false, erro: typeof erroDify === 'object' ? JSON.stringify(erroDify) : erroDify });
-=======
-    console.error("❌ Erro ao chamar Dify:", err?.response?.data || err.message);
-    res.status(500).json({ ok: false, erro: err?.response?.data || err.message });
-  }
-});
-
-// rota /youtube - utiliza Apify actor streamers/youtube-channel-scraper
-app.post("/youtube", async (req, res) => {
-  try {
-    const { url } = req.body;
-    if (!url) return res.status(400).json({ ok:false, erro: "Informe o link do canal." });
-
-    if (!process.env.APIFY_TOKEN) {
-      return res.status(500).json({ ok:false, erro: "APIFY_TOKEN não configurado no .env" });
-    }
-
-    const ACTOR_ID = "streamers/youtube-channel-scraper";
-    const apifyClient = new ApifyClient({ token: process.env.APIFY_TOKEN });
-
-    // start actor run
-    const run = await apifyClient.actor(ACTOR_ID).call({
-      startUrls: [{ url }],
-      maxResults: 50
-    });
-
-    // read dataset items
-    const { items = [] } = await apifyClient.dataset(run.defaultDatasetId).listItems();
-
-    // filter videos
-    const videoItems = items.filter(i => i.type === "video" || i.itemType === "video" || (i.title && i.type !== 'channel'));
-    const about = (items.find(i => i.type === 'channel') || videoItems[0]?.aboutChannelInfo || {}) ;
-
-    const channelInfo = {
-      title: about.channelName || about.title || "Canal",
-      description: about.channelDescription || about.description || "",
-      avatarUrl: about.channelAvatarUrl || about.avatar || "",
-      subscribers: about.numberOfSubscribers ?? about.subscribers ?? 0,
-      channelTotalVideos: about.channelTotalVideos ?? about.totalVideos ?? 0,
-      channelTotalViews: about.channelTotalViews ?? about.totalViews ?? 0
-    };
-
-    const videoData = videoItems.map(v => ({
-      title: v.title || v.videoTitle || "Sem título",
-      viewCount: v.viewCount ?? v.views ?? 0,
-      duration: v.duration || v.videoDuration || "-",
-      date: v.date || v.uploadDate || v.publishedAt || "-"
-    }));
-
-    res.json({ ok: true, channel: channelInfo, videos: videoData });
-
-  } catch (err) {
-    console.error("❌ Erro no /youtube:", err?.response?.data || err.message);
-    res.status(500).json({ ok: false, erro: err?.response?.data || err.message || String(err) });
->>>>>>> 730130af28622ee9db7d644bc2c47ba638d53fc0
   }
 });
 
 // OPÇÃO 2 (FLUXO DE CIMA): Com link, envia o link E OS DADOS DO BANCO pro Dify
-app.post("/chat-com-link", async (req, res) => {
+app.post("/chat-com-link", checkAuth, async (req, res) => {
   try {
     const { pergunta, link } = req.body;
+    const usuario_id = req.session.usuario_id;
     if (!link || !pergunta) return res.status(400).json({ ok: false, erro: "Campos obrigatórios faltando" });
-    
-    // 🔍 BUSCA NO BANCO DE DADOS (Faltava isso nesta rota!)
+    // Se não passou conversa_id, cria uma nova
+    let finalConversa_id = conversa_id;
+    if (!conversa_id) {
+        const novaConversa = await pool.query(
+            'INSERT INTO conversas (usuario_id, titulo, criacao) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING id',
+            [usuario_id, `Análise: ${link.substring(0, 50)}...`]
+        );
+        finalConversa_id = novaConversa.rows[0].id;
+    }
+
+    // Verifica se a conversa pertence ao usuário
+    const verificaConversa = await pool.query(
+        'SELECT id FROM conversas WHERE id = $1 AND usuario_id = $2',
+        [finalConversa_id, usuario_id]
+    );
+    if (verificaConversa.rows.length === 0) {
+        return res.status(403).json({ ok: false, erro: "Conversa inválida." });
+    }
+
+    //BUSCA NO BANCO DE DADOS
     let contextoBanco = "Nenhum dado encontrado no banco.";
     const queryBanco = await pool.query(`
         SELECT c.titulo_canal, c.total_inscritos, c.total_visualizacoes as views_totais,
@@ -256,7 +332,7 @@ app.post("/chat-com-link", async (req, res) => {
         contextoBanco = JSON.stringify(queryBanco.rows);
     }
 
-    // 📦 EMPACOTA O LINK E OS DADOS JUNTOS
+    //EMPACOTA O LINK E OS DADOS JUNTOS
     const payload = { 
         inputs: { 
             link: link,                // João usa isso no fluxo
@@ -264,7 +340,7 @@ app.post("/chat-com-link", async (req, res) => {
         }, 
         query: pergunta, 
         response_mode: "blocking", 
-        user: "usuario-vidwise" 
+        user: 'usuario-${usuario_id}' 
     };
 
     const difyResp = await axios.post(
