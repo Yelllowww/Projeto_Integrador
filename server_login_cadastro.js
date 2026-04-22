@@ -7,17 +7,23 @@ const path = require('path');
 const app = express();
 
 // Configurações para o servidor entender os formulários e arquivos HTML
+<<<<<<< HEAD
 app.use(cors({
     origin: '*', // Permite requisições de qualquer origem
     credentials: true
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Adiciona suporte a JSON também
+=======
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+>>>>>>> 023b4d86881a61dde324fb25afaefdfac3f00b27
 app.use(express.static(__dirname)); // Permite ler o login.html e teste.html da mesma pasta
 
 // Configuração do "Cofre" (PostgreSQL)
 const pool = new Pool({
     user: 'casaos',
+<<<<<<< HEAD
     host: '192.168.15.8',
     database: 'VidWiseDB', 
     password: 'casaos',
@@ -32,6 +38,14 @@ pool.connect((err, client, release) => {
         release();
     }
 });
+=======
+    host: 'casaos',
+    database: 'VidWiseDB', 
+    password: 'casaos', // Sua senha real
+    port: 5432, // A sua porta do DBeaver
+});
+
+>>>>>>> 023b4d86881a61dde324fb25afaefdfac3f00b27
 // --- ROTA DE CADASTRO ---
 app.post('/cadastrar', async (req, res) => {
     const { nome, email, senha } = req.body; 
@@ -72,7 +86,11 @@ app.post('/login', async (req, res) => {
 
         if (senhaCorreta) {
             // Se bater, manda o usuário para a área restrita
+<<<<<<< HEAD
             res.redirect('/index.html'); 
+=======
+            res.redirect('/teste.html'); 
+>>>>>>> 023b4d86881a61dde324fb25afaefdfac3f00b27
         } else {
             // Se não bater, barra na porta
             res.send("Acesso Negado: Senha incorreta!");
@@ -83,7 +101,11 @@ app.post('/login', async (req, res) => {
 });
 
 // Liga o servidor na porta 3000
+<<<<<<< HEAD
 app.listen(3000, () => {
     console.log("Servidor rodando! Garçom pronto na porta 3000.");
     console.log("Acesse: http://localhost:3000");
 });
+=======
+app.listen(3000, () => console.log("Servidor rodando! Garçom pronto na porta 3000."));
+>>>>>>> 023b4d86881a61dde324fb25afaefdfac3f00b27
