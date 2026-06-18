@@ -1,0 +1,117 @@
+body {
+    /* Aplicando a fonte Montserrat para todo o documento */
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f2f5f9; /* Cor de fundo cinza-azulada muito clara */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.register-container {
+    /* O SEGREDO: Sem bordas ou fundos de caixa. Apenas layout. */
+    width: 100%;
+    max-width: 380px; /* Largura máxima do formulário */
+    padding: 20px;
+    text-align: center;
+}
+
+/* Estilização da Logo (A Imagem) */
+.logo-area {
+    margin-bottom: 25px;
+}
+.main-logo {
+    max-width: 120px; /* Ajuste a largura da sua logo aqui */
+    height: auto;
+}
+/* Nova classe para a borda da logo */
+.borda-preta {
+    border: 2px solid black; /* 2 pixels de espessura, linha sólida, cor preta */
+    border-radius: 8px; /* Opcional: deixa as pontas da borda levemente arredondadas */
+    padding: 0px; /* Opcional: dá um espaço entre a borda e a imagem */
+}
+
+h3 {
+    color: #000;
+    margin-bottom: 25px;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.google-btn {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* --- ATUALIZAÇÃO: Divisor com linhas laterais --- */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.divider::before {
+    margin-right: 15px;
+}
+
+.divider::after {
+    margin-left: 15px;
+}
+/* ------------------------------------------------ */
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    width: 100%;
+    padding: 14px 16px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 15px;
+    background-color: #ffffff;
+}
+input::placeholder { color: #888; }
+
+.btn-cadastrar {
+    width: 100%;
+    padding: 14px;
+    background-color: #1a73e8; /* Azul do Google */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+    letter-spacing: 0.5px;
+}
+
+.footer-text { font-size: 13px; color: #555; margin-top: 20px; }
+.footer-text a { color: #1a73e8; text-decoration: none; font-weight: 500; }
